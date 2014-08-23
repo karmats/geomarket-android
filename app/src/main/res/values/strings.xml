@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">GeoMarket - Android</string>
+    <string name="title_activity_view_events">Events near you</string>
+
+</resources>
