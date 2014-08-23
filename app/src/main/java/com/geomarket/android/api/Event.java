@@ -1,5 +1,7 @@
 package com.geomarket.android.api;
 
+import com.google.android.gms.maps.model.LatLng;
+
 /**
  * Class to represent an Event
  */
@@ -10,6 +12,7 @@ public class Event {
     private Long expires;
     private String companyName;
     private String eventTyp;
+    private Location location;
 
     public Event() {
     }
@@ -52,5 +55,47 @@ public class Event {
 
     public void setEventTyp(String eventTyp) {
         this.eventTyp = eventTyp;
+    }
+
+    public Location getLocation() {
+        return location;
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
+    }
+
+
+    public class Location {
+        private Double lat;
+        private Double lon;
+
+        public Location() {
+        }
+
+        public Location(Double lat, Double lon) {
+            this.lat = lat;
+            this.lon = lon;
+        }
+
+        public Double getLat() {
+            return lat;
+        }
+
+        public void setLat(Double lat) {
+            this.lat = lat;
+        }
+
+        public Double getLon() {
+            return lon;
+        }
+
+        public void setLon(Double lon) {
+            this.lon = lon;
+        }
+
+        public LatLng toLatLng() {
+            return new LatLng(lat, lon);
+        }
     }
 }

@@ -13,6 +13,7 @@ import com.google.android.gms.maps.model.LatLng;
 public class ViewEventsActivity extends FragmentActivity {
 
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
+    private Location latestLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,8 +51,12 @@ public class ViewEventsActivity extends FragmentActivity {
         mMap.setOnMyLocationChangeListener(new GoogleMap.OnMyLocationChangeListener() {
             @Override
             public void onMyLocationChange(Location location) {
-                new FetchEventsTask().execute(location);
-                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 12.0f));
+                // Only fetch events if we have moved more than 10 meters
+                if (latestLocation == null || location.distanceTo(latestLocation) > 10) {
+                    new FetchEventsTask(mMap).execute(location);
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 12.0f));
+                    latestLocation = location;
+                }
             }
         });
     }
