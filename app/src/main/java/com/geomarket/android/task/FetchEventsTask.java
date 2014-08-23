@@ -8,9 +8,10 @@ import com.geomarket.android.api.service.GeoMarketServiceApi;
 import com.geomarket.android.api.service.GeoMarketServiceApiBuilder;
 import com.geomarket.android.util.LogHelper;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import retrofit.RestAdapter;
+import retrofit.RetrofitError;
 
 /**
  * Task to fetch a list of events.
@@ -23,7 +24,12 @@ public class FetchEventsTask extends AsyncTask<Location, Void, List<Event>> {
     @Override
     protected List<Event> doInBackground(Location... locations) {
         Location l = locations[0];
-        List<Event> result = api.getEventsForLocation(l.getLatitude(), l.getLongitude(), "EN");
+        List<Event> result = new ArrayList<Event>();
+        try {
+            result = api.getEventsForLocation(l.getLatitude(), l.getLongitude(), "EN");
+        } catch (RetrofitError e) {
+            LogHelper.logException(e);
+        }
         LogHelper.logInfo("Got list of " + result.size());
         return result;
     }
