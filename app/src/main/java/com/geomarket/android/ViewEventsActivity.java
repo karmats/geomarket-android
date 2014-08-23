@@ -1,12 +1,21 @@
 package com.geomarket.android;
 
+import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 
+import com.geomarket.android.api.Event;
+import com.geomarket.android.api.service.GeoMarketServiceApi;
+import com.geomarket.android.task.FetchEventsTask;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
+
+import java.util.List;
+
+import retrofit.RestAdapter;
 
 public class ViewEventsActivity extends FragmentActivity {
 
@@ -15,6 +24,7 @@ public class ViewEventsActivity extends FragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_view_events);
         setUpMapIfNeeded();
     }
@@ -60,6 +70,13 @@ public class ViewEventsActivity extends FragmentActivity {
      * This should only be called once and when we are sure that {@link #mMap} is not null.
      */
     private void setUpMap() {
-        mMap.addMarker(new MarkerOptions().position(new LatLng(0, 0)).title("Marker"));
+        mMap.setMyLocationEnabled(true);
+        mMap.setOnMyLocationChangeListener(new GoogleMap.OnMyLocationChangeListener() {
+            @Override
+            public void onMyLocationChange(Location location) {
+                new FetchEventsTask().execute(location);
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 12.0f));
+            }
+        });
     }
 }
