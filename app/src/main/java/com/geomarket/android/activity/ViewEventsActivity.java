@@ -1,9 +1,10 @@
-package com.geomarket.android;
+package com.geomarket.android.activity;
 
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 
+import com.geomarket.android.R;
 import com.geomarket.android.task.FetchEventsTask;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
