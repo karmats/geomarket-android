@@ -15,5 +15,8 @@ buildscript {
 allprojects {
     repositories {
         jcenter()
+        maven {
+            url 'http://negod.myasustor.com:8080/nexus-2.8.0-05/service/local/repositories/thirdparty/content/'
+        }
     }
 }
