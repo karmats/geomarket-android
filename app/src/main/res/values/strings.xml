@@ -3,8 +3,9 @@
 
     <string name="app_name">GeoMarket - Android</string>
     <string name="title_activity_view_events">Events near you</string>
-
     <string name="title_activity_login">Sign in</string>
+    <string name="title_fragment_view_map_events">Map</string>
+    <string name="title_fragment_view_list_events">List</string>
 
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
@@ -17,4 +18,7 @@
     <string name="error_invalid_password">This password is too short</string>
     <string name="error_incorrect_password">This password is incorrect</string>
     <string name="error_field_required">This field is required</string>
+    <string name="hello_world">Fetching awesome data!</string>
+    <string name="action_settings">Settings</string>
+
 </resources>

@@ -5,7 +5,6 @@ import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 
 import android.app.LoaderManager.LoaderCallbacks;
-import android.content.ContentResolver;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
@@ -27,6 +26,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.geomarket.android.fragment.ViewMapEventsFragment;
 import com.geomarket.android.util.LogHelper;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -110,7 +110,7 @@ public class LoginActivity extends PlusBaseActivity implements LoaderCallbacks<C
                 // Just start the ViewEventsActivity
                 // TODO Remove when we have some logic to this
                 LogHelper.logInfo("Starting View events activity");
-                startActivity(new Intent(LoginActivity.this, ViewEventsActivity.class));
+                startActivity(new Intent(LoginActivity.this, ViewMapEventsFragment.class));
             }
         });
 

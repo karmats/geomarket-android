@@ -1,14 +1,16 @@
 package com.geomarket.android.task;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.location.Location;
 import android.os.AsyncTask;
+import android.os.Parcelable;
 
+import com.geomarket.android.activity.ViewEventsActivity;
 import com.geomarket.android.api.Event;
 import com.geomarket.android.api.service.GeoMarketServiceApi;
 import com.geomarket.android.api.service.GeoMarketServiceApiBuilder;
 import com.geomarket.android.util.LogHelper;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,33 +22,31 @@ import retrofit.RetrofitError;
  */
 public class FetchEventsTask extends AsyncTask<Location, Void, List<Event>> {
 
-    // The map to update with the events
-    private GoogleMap mMap;
+    // Calling activity
+    // TODO Change this
+    private Activity mContext;
     // Api
     private GeoMarketServiceApi api;
 
-    public FetchEventsTask(GoogleMap map) {
-        this.mMap = map;
+    public FetchEventsTask(Activity context) {
+        this.mContext = context;
         this.api = GeoMarketServiceApiBuilder.newInstance();
     }
 
     @Override
     protected void onPostExecute(List<Event> events) {
-        for (Event e : events) {
-            LogHelper.logInfo("Location: " + e.getLocation());
-            if (e.getLocation() != null) {
-                LogHelper.logInfo("Adding marker at " + e.getLocation().getLat() + ", " + e.getLocation().getLon());
-                mMap.addMarker(new MarkerOptions().position(e.getLocation().toLatLng()).title(e.getCompanyName()));
-            }
-        }
+        Intent viewEventsActivity = new Intent(mContext.getApplicationContext(), ViewEventsActivity.class);
+        viewEventsActivity.putParcelableArrayListExtra(ViewEventsActivity.EVENTS_EXTRA, new ArrayList<Parcelable>(events));
+        mContext.startActivity(viewEventsActivity);
+        mContext.finish();
     }
 
     @Override
     protected List<Event> doInBackground(Location... locations) {
-        Location l = locations[0];
+        Location loc = locations[0];
         List<Event> result = new ArrayList<Event>();
         try {
-            result = api.getEventsForLocation(l.getLatitude(), l.getLongitude(), 200, "EN");
+            result = api.getEventsForLocation(loc.getLatitude(), loc.getLongitude(), 200, "EN");
         } catch (RetrofitError e) {
             LogHelper.logException(e);
         }
