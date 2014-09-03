@@ -12,17 +12,19 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".activity.ViewEventsActivity"
-            android:label="@string/title_activity_view_events"></activity>
-
-        <activity
-            android:name=".activity.LoginActivity"
-            android:label="@string/title_activity_login"
-            android:windowSoftInputMode="adjustResize|stateHidden">
+            android:label="@string/title_activity_view_events">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".activity.LoginActivity"
+            android:label="@string/title_activity_login"
+            android:windowSoftInputMode="adjustResize|stateHidden">
+
         </activity>
 
         <meta-data
