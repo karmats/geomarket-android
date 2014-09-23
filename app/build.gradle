@@ -26,4 +26,5 @@ dependencies {
     compile 'com.squareup.retrofit:retrofit:1.6.1'
     compile 'com.facebook:android-sdk:3.17.2@aar'
     compile 'com.android.support:support-v13:20.0.0'
+    compile 'com.sothree.slidinguppanel:library:+'
 }

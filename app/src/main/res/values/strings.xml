@@ -6,6 +6,9 @@
     <string name="title_activity_login">Sign in</string>
     <string name="title_fragment_view_map_events">Map</string>
     <string name="title_fragment_view_list_events">List</string>
+    <!-- Temp -->
+    <string name="detail_view">Detail View</string>
+    <string name="open_detail_view">Open Detail View</string>
 
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
