@@ -5,12 +5,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.geomarket.android.activity.ViewEventsActivity;
 import com.geomarket.android.api.Event;
 import com.geomarket.android.util.LogHelper;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
@@ -48,13 +50,27 @@ public class ViewMapEventsFragment extends SupportMapFragment {
             for (Event e : events) {
                 LogHelper.logInfo("Location from event: " + e.getLocation());
                 if (e.getLocation() != null) {
-                    LogHelper.logInfo("Adding marker at " + e.getLocation().getLat() + ", " + e.getLocation().getLon());
                     mMap.addMarker(new MarkerOptions().position(e.getLocation().toLatLng()).title(e.getCompanyName()));
                 }
             }
         } else {
             LogHelper.logError("Google map is null, any chance that Google Services isn't installed?");
         }
+        // When user clicks on a marker, show the event details view
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                ((ViewEventsActivity)getActivity()).viewEvent(null);
+                return true;
+            }
+        });
+        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+            @Override
+            public void onMapClick(LatLng latLng) {
+                LogHelper.logInfo("Map clicked!");
+                ((ViewEventsActivity)getActivity()).viewEvent(null);
+            }
+        });
     }
 
 }

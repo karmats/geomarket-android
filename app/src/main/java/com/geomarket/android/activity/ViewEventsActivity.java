@@ -12,12 +12,14 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.geomarket.android.R;
 import com.geomarket.android.api.Event;
 import com.geomarket.android.fragment.ViewListEventsFragment;
 import com.geomarket.android.fragment.ViewMapEventsFragment;
 import com.geomarket.android.util.LogHelper;
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -25,6 +27,8 @@ import java.util.Locale;
 public class ViewEventsActivity extends FragmentActivity implements ActionBar.TabListener, ViewListEventsFragment.OnEventClickListener {
 
     public static final String EVENTS_EXTRA = "events_extra";
+
+    public static final String SAVED_STATE_ACTION_BAR_HIDDEN = "saved_state_action_bar_hidden";
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -40,6 +44,11 @@ public class ViewEventsActivity extends FragmentActivity implements ActionBar.Ta
      * The {@link ViewPager} that will host the section contents.
      */
     ViewPager mViewPager;
+
+    /**
+     * The {@link SlidingUpPanelLayout} that will show details about an event.
+     */
+    SlidingUpPanelLayout mDetailsPanelLayout;
 
     // Latest known location
     private Location mLatestLocation;
@@ -73,6 +82,34 @@ public class ViewEventsActivity extends FragmentActivity implements ActionBar.Ta
             @Override
             public void onPageSelected(int position) {
                 actionBar.setSelectedNavigationItem(position);
+            }
+        });
+
+        // Sliding up panel
+        mDetailsPanelLayout = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
+        mDetailsPanelLayout.setPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
+            @Override
+            public void onPanelSlide(View panel, float slideOffset) {
+            }
+
+            @Override
+            public void onPanelExpanded(View panel) {
+                // Hide tabs when expaned so the whole view will be shown
+                actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+            }
+
+            @Override
+            public void onPanelCollapsed(View panel) {
+                // View tabs when collapsed
+                actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+            }
+
+            @Override
+            public void onPanelAnchored(View panel) {
+            }
+
+            @Override
+            public void onPanelHidden(View view) {
             }
         });
 
@@ -130,6 +167,24 @@ public class ViewEventsActivity extends FragmentActivity implements ActionBar.Ta
     @Override
     public void onEventClick(String id) {
         LogHelper.logInfo("Event " + id + " clicked");
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (mDetailsPanelLayout.isPanelExpanded()) {
+            mDetailsPanelLayout.collapsePanel();
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    /**
+     * Shows information about an event.
+     *
+     * @param event The event to view more info about.
+     */
+    public void viewEvent(Event event) {
+        mDetailsPanelLayout.showPanel();
     }
 
     /**

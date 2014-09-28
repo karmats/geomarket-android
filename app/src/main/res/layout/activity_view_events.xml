@@ -1,58 +1,62 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".DemoActivity">
+    android:layout_height="match_parent">
 
     <com.sothree.slidinguppanel.SlidingUpPanelLayout xmlns:sothree="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/slidingLayout"
+        android:id="@+id/sliding_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="bottom"
         sothree:dragView="@+id/dragView"
-        sothree:panelHeight="68dp"
+        sothree:panelHeight="@dimen/sliding_up_panel_height"
         sothree:paralaxOffset="100dp"
-        sothree:shadowHeight="4dp">
+        sothree:shadowHeight="4dp"
+        sothree:initialState="hidden">
 
         <android.support.v4.view.ViewPager
             android:id="@+id/pager"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             tools:context="com.geomarket.android.activity.ViewEventsActivity" />
-
         <!-- SLIDING LAYOUT -->
         <LinearLayout
             android:id="@+id/dragView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="#000"
+            android:background="@color/lightest_gray"
             android:clickable="true"
             android:focusable="false"
             android:orientation="vertical">
 
+            <!-- Bottom panel -->
             <LinearLayout
+                android:id="@+id/event_detail_panel"
                 android:layout_width="match_parent"
-                android:layout_height="68dp"
-                android:orientation="horizontal">
+                android:layout_height="@dimen/sliding_up_panel_height"
+                android:orientation="horizontal"
+                android:paddingLeft="@dimen/activity_horizontal_margin">
+
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.2"
+                    android:src="@drawable/placeholder" />
 
                 <TextView
                     android:id="@+id/name"
-                    android:text="@string/open_detail_view"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:layout_weight="1"
+                    android:layout_weight="0.8"
                     android:gravity="center_vertical"
-                    android:paddingLeft="10dp"
+                    android:paddingLeft="@dimen/activity_horizontal_margin"
+                    android:text="@string/open_detail_view"
                     android:textSize="14sp" />
 
             </LinearLayout>
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:scaleType="fitStart"
-                android:text="@string/detail_view" />
+            <!-- Detail content -->
+            <include layout="@layout/event_detail"></include>
         </LinearLayout>
     </com.sothree.slidinguppanel.SlidingUpPanelLayout>
 
