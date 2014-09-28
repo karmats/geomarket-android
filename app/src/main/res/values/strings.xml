@@ -8,9 +8,13 @@
     <string name="title_fragment_view_list_events">List</string>
     <!-- Temp -->
     <string name="details">Details</string>
-    <string name="details_text_tmp">Ex sale exerci iracundia vel, fabulas definitionem vis ut. Quo ei intellegam omittantur, vis perfecto moderatius an. Ex omnis doming nec, gubergren sadipscing ius te, quo at ludus rationibus. Vocent molestie pro cu, est ponderum apeirian ut. Ut omnium laboramus comprehensam sit, option corpora ut qui. Ea dicat albucius duo, quo saperet nonumes expetenda cu, ludus dolor fabellas ut mei.</string>
+    <string name="detail_location_and_contact">Location &amp; Contact</string>
     <string name="detail_view">Detail View</string>
     <string name="open_detail_view">Open Detail View</string>
+    <string name="details_text_tmp">Ex sale exerci iracundia vel, fabulas definitionem vis ut. Quo ei intellegam omittantur, vis perfecto moderatius an. Ex omnis doming nec, gubergren sadipscing ius te, quo at ludus rationibus. Vocent molestie pro cu, est ponderum apeirian ut. Ut omnium laboramus comprehensam sit, option corpora ut qui. Ea dicat albucius duo, quo saperet nonumes expetenda cu, ludus dolor fabellas ut mei.</string>
+    <string name="details_location_tmp">Såggatan 50A, 41467, Göteborg</string>
+    <string name="details_contact_tmp">+46730-221122</string>
+    <string name="details_website_tmp">www.awesome.com</string>
 
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
