@@ -12,12 +12,12 @@ import retrofit.http.Query;
  */
 public interface GeoMarketServiceApi {
 
-    static final String EVENTS_SVC_PATH = "/v1/events";
+    static final String EVENTS_SVC_PATH = "/Geomarket/webresources/events/byLocation";
 
     static final String RADIUS_PARAM = "radius";
-    static final String LAT_PARAM = "lat";
-    static final String LON_PARAM = "lon";
-    static final String LANG_PARAM = "lang";
+    static final String LAT_PARAM = "latitude";
+    static final String LON_PARAM = "longitude";
+    static final String LANG_PARAM = "language";
 
     /**
      * Gets all events near a specific location

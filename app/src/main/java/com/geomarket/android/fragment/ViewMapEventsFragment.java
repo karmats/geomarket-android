@@ -16,12 +16,16 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ViewMapEventsFragment extends SupportMapFragment {
     private static String EVENTS_PARAM = "events_param";
     private static String LOCATION_PARAM = "location_param";
 
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
+
+    private Map<String, Event> markerIdEventMap = new HashMap<String, Event>();
 
     public static ViewMapEventsFragment newInstance(ArrayList<Event> events, Event.Location location) {
         LogHelper.logInfo("Events is " + events + " Location is " + location);
@@ -46,11 +50,12 @@ public class ViewMapEventsFragment extends SupportMapFragment {
         mMap = getMap();
         if (mMap != null) {
             mMap.setMyLocationEnabled(true);
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLat(), location.getLon()), 12.0f));
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 12.0f));
             for (Event e : events) {
                 LogHelper.logInfo("Location from event: " + e.getLocation());
                 if (e.getLocation() != null) {
-                    mMap.addMarker(new MarkerOptions().position(e.getLocation().toLatLng()).title(e.getCompanyName()));
+                    Marker m = mMap.addMarker(new MarkerOptions().position(e.getLocation().toLatLng()));
+                    markerIdEventMap.put(m.getId(), e);
                 }
             }
         } else {
@@ -64,11 +69,11 @@ public class ViewMapEventsFragment extends SupportMapFragment {
                 return true;
             }
         });
-        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
-            public void onMapClick(LatLng latLng) {
-                LogHelper.logInfo("Map clicked!");
-                ((ViewEventsActivity)getActivity()).viewEvent(null);
+            public boolean onMarkerClick(Marker marker) {
+                ((ViewEventsActivity)getActivity()).viewEvent(markerIdEventMap.get(marker.getId()));
+                return false;
             }
         });
     }

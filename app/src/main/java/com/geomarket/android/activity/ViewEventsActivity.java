@@ -13,6 +13,7 @@ import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 import com.geomarket.android.R;
 import com.geomarket.android.api.Event;
@@ -23,6 +24,9 @@ import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.util.ArrayList;
 import java.util.Locale;
+
+import butterknife.ButterKnife;
+import butterknife.InjectView;
 
 public class ViewEventsActivity extends FragmentActivity implements ActionBar.TabListener, ViewListEventsFragment.OnEventClickListener {
 
@@ -54,6 +58,18 @@ public class ViewEventsActivity extends FragmentActivity implements ActionBar.Ta
     private Location mLatestLocation;
     // The events
     private ArrayList<Event> mEvents = new ArrayList<Event>();
+
+    // To be filled in when event should be shown
+    @InjectView(R.id.view_event_detail_title)
+    TextView eventTitleTextView;
+    @InjectView(R.id.view_event_detail_description)
+    TextView eventDescTextView;
+    @InjectView(R.id.view_event_detail_location)
+    TextView eventLocation;
+    @InjectView(R.id.view_event_detail_phone)
+    TextView eventPhone;
+    @InjectView(R.id.view_event_detail_web_site)
+    TextView eventWebSite;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -126,6 +142,8 @@ public class ViewEventsActivity extends FragmentActivity implements ActionBar.Ta
         }
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         mLatestLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+        // Inject the views
+        ButterKnife.inject(this);
     }
 
 
@@ -184,6 +202,11 @@ public class ViewEventsActivity extends FragmentActivity implements ActionBar.Ta
      * @param event The event to view more info about.
      */
     public void viewEvent(Event event) {
+        eventTitleTextView.setText(event.getCompany().getName() + " " + event.getEventText().getHeading());
+        eventDescTextView.setText(event.getEventText().getBody());
+        eventLocation.setText(event.getCompany().getStreet() + event.getCompany().getStreetNr());
+        eventPhone.setText(String.valueOf(event.getCompany().getPostalCode()));
+        eventWebSite.setText(event.getCompany().getName() + ".com");
         mDetailsPanelLayout.showPanel();
     }
 

@@ -12,27 +12,25 @@ import com.google.android.gms.maps.model.LatLng;
 public class Event implements Parcelable {
 
     private String id;
-    private String category;
+    private String categoryId;
     private Long expires;
-    private String companyName;
-    private String eventTyp;
+    private String eventTypeId;
     private Location location;
+    private EventText eventText;
+    private Company company;
 
     public Event() {
     }
 
     public Event(Parcel source) {
-        Bundle data = source.readBundle();
+        Bundle data = source.readBundle(getClass().getClassLoader());
         id = data.getString("id");
-        category = data.getString("category");
+        categoryId = data.getString("categoryId");
         expires = data.getLong("expires");
-        companyName = data.getString("companyName");
-        eventTyp = data.getString("eventTyp");
-        Double latitude = data.getDouble("latitude");
-        Double longitude = data.getDouble("longitude");
-        if (latitude != null && longitude != null) {
-            location = new Location(latitude, longitude);
-        }
+        eventTypeId = data.getString("eventTypeId");
+        location = data.getParcelable("location");
+        eventText = data.getParcelable("eventText");
+        company = data.getParcelable("company");
     }
 
     public static final Parcelable.Creator<Event> CREATOR = new Parcelable.Creator<Event>() {
@@ -49,14 +47,12 @@ public class Event implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         Bundle data = new Bundle();
         data.putString("id", id);
-        data.putString("category", category);
+        data.putString("categoryId", categoryId);
         data.putLong("expires", expires);
-        data.putString("companyName", companyName);
-        data.putString("eventTyp", eventTyp);
-        if (location != null) {
-            data.putDouble("latitude", location.lat);
-            data.putDouble("longitude", location.lon);
-        }
+        data.putString("eventTypeId", eventTypeId);
+        data.putParcelable("location", location);
+        data.putParcelable("eventText", eventText);
+        data.putParcelable("company", company);
         dest.writeBundle(data);
     }
 
@@ -73,12 +69,12 @@ public class Event implements Parcelable {
         this.id = id;
     }
 
-    public String getCategory() {
-        return category;
+    public String getCategoryId() {
+        return categoryId;
     }
 
-    public void setCategory(String category) {
-        this.category = category;
+    public void setCategoryId(String categoryId) {
+        this.categoryId = categoryId;
     }
 
     public Long getExpires() {
@@ -89,20 +85,12 @@ public class Event implements Parcelable {
         this.expires = expires;
     }
 
-    public String getCompanyName() {
-        return companyName;
+    public String getEventTypeId() {
+        return eventTypeId;
     }
 
-    public void setCompanyName(String companyName) {
-        this.companyName = companyName;
-    }
-
-    public String getEventTyp() {
-        return eventTyp;
-    }
-
-    public void setEventTyp(String eventTyp) {
-        this.eventTyp = eventTyp;
+    public void setEventTypeId(String eventTypeId) {
+        this.eventTypeId = eventTypeId;
     }
 
     public Location getLocation() {
@@ -113,22 +101,41 @@ public class Event implements Parcelable {
         this.location = location;
     }
 
-    @Override
-    public String toString() {
-        return companyName + " category: " + category;
+    public EventText getEventText() {
+        return eventText;
     }
 
+    public void setEventText(EventText eventText) {
+        this.eventText = eventText;
+    }
+
+    public Company getCompany() {
+        return company;
+    }
+
+    public void setCompany(Company company) {
+        this.company = company;
+    }
+
+    @Override
+    public String toString() {
+        return company.getName() + " Event: " + eventText.getHeading();
+    }
+
+    /**
+     * Describes a location with a latitude and longitude
+     */
     public static class Location implements Parcelable {
-        private Double lat;
-        private Double lon;
+        private Double latitude;
+        private Double longitude;
 
         public Location() {
         }
 
         public Location(Parcel source) {
             Bundle data = source.readBundle();
-            lat = data.getDouble("lat");
-            lon = data.getDouble("lon");
+            latitude = data.getDouble("latitude");
+            longitude = data.getDouble("longitude");
         }
 
         public static final Parcelable.Creator<Location> CREATOR = new Parcelable.Creator<Location>() {
@@ -144,8 +151,8 @@ public class Event implements Parcelable {
         @Override
         public void writeToParcel(Parcel dest, int flags) {
             Bundle data = new Bundle();
-            data.putDouble("lat", lat);
-            data.putDouble("lon", lon);
+            data.putDouble("latitude", latitude);
+            data.putDouble("longitude", longitude);
             dest.writeBundle(data);
         }
 
@@ -156,33 +163,223 @@ public class Event implements Parcelable {
 
 
         public Location(Double lat, Double lon) {
-            this.lat = lat;
-            this.lon = lon;
+            this.latitude = lat;
+            this.longitude = lon;
         }
 
-        public Double getLat() {
-            return lat;
+        public Double getLatitude() {
+            return latitude;
         }
 
-        public void setLat(Double lat) {
-            this.lat = lat;
+        public void setLatitude(Double lat) {
+            this.latitude = lat;
         }
 
-        public Double getLon() {
-            return lon;
+        public Double getLongitude() {
+            return longitude;
         }
 
         public void setLon(Double lon) {
-            this.lon = lon;
+            this.longitude = lon;
         }
 
         public LatLng toLatLng() {
-            return new LatLng(lat, lon);
+            return new LatLng(latitude, longitude);
         }
 
         @Override
         public String toString() {
-            return lat + ", " + lon;
+            return latitude + ", " + longitude;
         }
+    }
+
+    /**
+     * Describes a json event text with a heading and body
+     */
+    public static class EventText implements Parcelable {
+        private String heading;
+        private String body;
+
+        public EventText() {
+        }
+
+        public EventText(Parcel source) {
+            Bundle data = source.readBundle();
+            heading = data.getString("heading");
+            body = data.getString("body");
+        }
+
+        public static final Parcelable.Creator<EventText> CREATOR = new Parcelable.Creator<EventText>() {
+            public EventText createFromParcel(Parcel data) {
+                return new EventText(data);
+            }
+
+            public EventText[] newArray(int size) {
+                return new EventText[size];
+            }
+        };
+
+        @Override
+        public int describeContents() {
+            return 0;
+        }
+
+        @Override
+        public void writeToParcel(Parcel dest, int flags) {
+            Bundle data = new Bundle();
+            data.putString("heading", heading);
+            data.putString("body", body);
+            dest.writeBundle(data);
+        }
+
+        public String getHeading() {
+            return heading;
+        }
+
+        public void setHeading(String heading) {
+            this.heading = heading;
+        }
+
+        public String getBody() {
+            return body;
+        }
+
+        public void setBody(String body) {
+            this.body = body;
+        }
+    }
+
+    /**
+     * Describes a json Company
+     */
+    public static class Company implements Parcelable {
+        private String id;
+        private String name;
+        private String street;
+        private String streetNr;
+        private String city;
+        private String state;
+        private String country;
+        private Long postalCode;
+        private String www;
+
+        public Company() {
+        }
+
+        public Company(Parcel source) {
+            Bundle data = source.readBundle();
+            id = data.getString("id");
+            name = data.getString("name");
+            street = data.getString("street");
+            streetNr = data.getString("streetNr");
+            city = data.getString("city");
+            state = data.getString("state");
+            country = data.getString("country");
+            postalCode = data.getLong("postalCode");
+            www = data.getString("www");
+        }
+
+        public static final Parcelable.Creator<Company> CREATOR = new Parcelable.Creator<Company>() {
+            public Company createFromParcel(Parcel data) {
+                return new Company(data);
+            }
+
+            public Company[] newArray(int size) {
+                return new Company[size];
+            }
+        };
+
+        @Override
+        public int describeContents() {
+            return 0;
+        }
+
+        @Override
+        public void writeToParcel(Parcel dest, int flags) {
+            Bundle data = new Bundle();
+            data.putString("id", id);
+            data.putString("name", name);
+            data.putString("street", street);
+            data.putString("streetNr", streetNr);
+            data.putString("city", city);
+            data.putString("state", state);
+            data.putString("country", country);
+            data.putLong("postalCode", postalCode == null ? -1 : postalCode);
+            data.putString("www", www);
+            dest.writeBundle(data);
+        }
+
+        public String getId() {
+            return id;
+        }
+
+        public void setId(String id) {
+            this.id = id;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getStreet() {
+            return street;
+        }
+
+        public void setStreet(String street) {
+            this.street = street;
+        }
+
+        public String getStreetNr() {
+            return streetNr;
+        }
+
+        public void setStreetNr(String streetNr) {
+            this.streetNr = streetNr;
+        }
+
+        public String getCity() {
+            return city;
+        }
+
+        public void setCity(String city) {
+            this.city = city;
+        }
+
+        public String getState() {
+            return state;
+        }
+
+        public void setState(String state) {
+            this.state = state;
+        }
+
+        public String getCountry() {
+            return country;
+        }
+
+        public void setCountry(String country) {
+            this.country = country;
+        }
+
+        public Long getPostalCode() {
+            return postalCode;
+        }
+
+        public void setPostalCode(Long postalCode) {
+            this.postalCode = postalCode;
+        }
+
+        public String getWww() {
+            return www;
+        }
+
+        public void setWww(String www) {
+            this.www = www;
+        }
+
     }
 }

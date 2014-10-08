@@ -7,7 +7,7 @@ import retrofit.RestAdapter;
  */
 public class GeoMarketServiceApiBuilder {
 
-    static final String HOST = "http://109.74.2.250:9000";
+    static final String HOST = "http://109.74.2.250:7200";
 
     private GeoMarketServiceApiBuilder() {
     }
