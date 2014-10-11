@@ -61,15 +61,15 @@ public class ViewEventsActivity extends FragmentActivity implements ActionBar.Ta
 
     // To be filled in when event should be shown
     @InjectView(R.id.view_event_detail_title)
-    TextView eventTitleTextView;
+    TextView mEventTitleTextView;
     @InjectView(R.id.view_event_detail_description)
-    TextView eventDescTextView;
+    TextView mEventDescTextView;
     @InjectView(R.id.view_event_detail_location)
-    TextView eventLocation;
+    TextView mEventLocation;
     @InjectView(R.id.view_event_detail_phone)
-    TextView eventPhone;
+    TextView mEventPhone;
     @InjectView(R.id.view_event_detail_web_site)
-    TextView eventWebSite;
+    TextView mEventWebSite;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -202,12 +202,19 @@ public class ViewEventsActivity extends FragmentActivity implements ActionBar.Ta
      * @param event The event to view more info about.
      */
     public void viewEvent(Event event) {
-        eventTitleTextView.setText(event.getCompany().getName() + " " + event.getEventText().getHeading());
-        eventDescTextView.setText(event.getEventText().getBody());
-        eventLocation.setText(event.getCompany().getStreet() + event.getCompany().getStreetNr());
-        eventPhone.setText(String.valueOf(event.getCompany().getPostalCode()));
-        eventWebSite.setText(event.getCompany().getName() + ".com");
+        mEventTitleTextView.setText(event.getCompany().getName() + " " + event.getEventText().getHeading());
+        mEventDescTextView.setText(event.getEventText().getBody());
+        mEventLocation.setText(event.getCompany().getStreet() + event.getCompany().getStreetNr());
+        mEventPhone.setText(String.valueOf(event.getCompany().getPostalCode()));
+        mEventWebSite.setText(event.getCompany().getName() + ".com");
         mDetailsPanelLayout.showPanel();
+    }
+
+    /**
+     * Hides the detail panel.
+     */
+    public void hideSlidingPanel() {
+        mDetailsPanelLayout.hidePanel();
     }
 
     /**

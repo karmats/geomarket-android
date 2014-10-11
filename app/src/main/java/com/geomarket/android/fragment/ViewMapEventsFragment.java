@@ -25,7 +25,7 @@ public class ViewMapEventsFragment extends SupportMapFragment {
 
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
 
-    private Map<String, Event> markerIdEventMap = new HashMap<String, Event>();
+    private Map<String, Event> mMarkerIdEventMap = new HashMap<String, Event>();
 
     public static ViewMapEventsFragment newInstance(ArrayList<Event> events, Event.Location location) {
         LogHelper.logInfo("Events is " + events + " Location is " + location);
@@ -50,30 +50,31 @@ public class ViewMapEventsFragment extends SupportMapFragment {
         mMap = getMap();
         if (mMap != null) {
             mMap.setMyLocationEnabled(true);
+            mMap.getUiSettings().setZoomControlsEnabled(false);
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 12.0f));
             for (Event e : events) {
                 LogHelper.logInfo("Location from event: " + e.getLocation());
                 if (e.getLocation() != null) {
                     Marker m = mMap.addMarker(new MarkerOptions().position(e.getLocation().toLatLng()));
-                    markerIdEventMap.put(m.getId(), e);
+                    mMarkerIdEventMap.put(m.getId(), e);
                 }
             }
         } else {
             LogHelper.logError("Google map is null, any chance that Google Services isn't installed?");
         }
+
+        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+            @Override
+            public void onMapClick(LatLng latLng) {
+                ((ViewEventsActivity) getActivity()).hideSlidingPanel();
+            }
+        });
         // When user clicks on a marker, show the event details view
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
-                ((ViewEventsActivity)getActivity()).viewEvent(null);
+                ((ViewEventsActivity) getActivity()).viewEvent(mMarkerIdEventMap.get(marker.getId()));
                 return true;
-            }
-        });
-        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-            @Override
-            public boolean onMarkerClick(Marker marker) {
-                ((ViewEventsActivity)getActivity()).viewEvent(markerIdEventMap.get(marker.getId()));
-                return false;
             }
         });
     }
