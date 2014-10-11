@@ -73,6 +73,8 @@ public class ViewMapEventsFragment extends SupportMapFragment {
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
+                // Animate to the marker
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(marker.getPosition(), mMap.getCameraPosition().zoom), 300, null);
                 ((ViewEventsActivity) getActivity()).viewEvent(mMarkerIdEventMap.get(marker.getId()));
                 return true;
             }
