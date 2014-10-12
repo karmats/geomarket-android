@@ -1,5 +1,6 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/events_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -9,10 +10,10 @@
         android:layout_height="match_parent"
         android:gravity="bottom"
         sothree:dragView="@+id/dragView"
+        sothree:initialState="hidden"
         sothree:panelHeight="@dimen/sliding_up_panel_height"
         sothree:paralaxOffset="100dp"
-        sothree:shadowHeight="4dp"
-        sothree:initialState="hidden">
+        sothree:shadowHeight="4dp">
 
         <android.support.v4.view.ViewPager
             android:id="@+id/pager"
@@ -21,7 +22,7 @@
             tools:context="com.geomarket.android.activity.ViewEventsActivity" />
         <!-- SLIDING LAYOUT -->
         <LinearLayout
-            android:id="@+id/dragView"
+            android:id="@+id/drag_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@color/lightest_gray"
@@ -56,7 +57,11 @@
             </LinearLayout>
 
             <!-- Detail content -->
-            <include layout="@layout/event_detail"></include>
+            <LinearLayout
+                android:id="@+id/view_event_fragment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical" />
         </LinearLayout>
     </com.sothree.slidinguppanel.SlidingUpPanelLayout>
 

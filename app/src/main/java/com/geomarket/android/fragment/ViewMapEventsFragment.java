@@ -1,11 +1,11 @@
 package com.geomarket.android.fragment;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.geomarket.android.activity.ViewEventsActivity;
 import com.geomarket.android.api.Event;
 import com.geomarket.android.util.LogHelper;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -22,6 +22,8 @@ import java.util.Map;
 public class ViewMapEventsFragment extends SupportMapFragment {
     private static String EVENTS_PARAM = "events_param";
     private static String LOCATION_PARAM = "location_param";
+
+    private OnMapEventClickListener mListener;
 
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
 
@@ -66,7 +68,7 @@ public class ViewMapEventsFragment extends SupportMapFragment {
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
-                ((ViewEventsActivity) getActivity()).hideSlidingPanel();
+                mListener.onMapClick();
             }
         });
         // When user clicks on a marker, show the event details view
@@ -75,10 +77,48 @@ public class ViewMapEventsFragment extends SupportMapFragment {
             public boolean onMarkerClick(Marker marker) {
                 // Animate to the marker
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(marker.getPosition(), mMap.getCameraPosition().zoom), 300, null);
-                ((ViewEventsActivity) getActivity()).viewEvent(mMarkerIdEventMap.get(marker.getId()));
+                mListener.onMapEventClick(mMarkerIdEventMap.get(marker.getId()));
                 return true;
             }
         });
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        try {
+            mListener = (OnMapEventClickListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                    + " must implement OnFragmentInteractionListener");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
+    }
+
+    /**
+     * This interface must be implemented by activities that contain this
+     * fragment to allow an interaction in this fragment to be communicated
+     * to the activity and potentially other fragments contained in that
+     * activity.
+     */
+    public interface OnMapEventClickListener {
+
+        /**
+         * When user clicks on an {@link com.geomarket.android.api.Event}
+         *
+         * @param event The event clicked
+         */
+        public void onMapEventClick(Event event);
+
+        /**
+         * When user clicks somewhere on the map (not on marker)
+         */
+        public void onMapClick();
     }
 
 }

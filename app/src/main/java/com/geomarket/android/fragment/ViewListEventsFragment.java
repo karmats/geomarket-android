@@ -29,7 +29,7 @@ import java.util.ArrayList;
 public class ViewListEventsFragment extends Fragment implements AbsListView.OnItemClickListener {
     private static String EVENTS_ARG = "events_arg";
 
-    private OnEventClickListener mListener;
+    private OnListEventClickListener mListener;
 
     /**
      * The fragment's ListView/GridView.
@@ -90,7 +90,7 @@ public class ViewListEventsFragment extends Fragment implements AbsListView.OnIt
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-            mListener = (OnEventClickListener) activity;
+            mListener = (OnListEventClickListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
                     + " must implement OnFragmentInteractionListener");
@@ -109,7 +109,7 @@ public class ViewListEventsFragment extends Fragment implements AbsListView.OnIt
         if (null != mListener) {
             // Notify the active callbacks interface (the activity, if the
             // fragment is attached to one) that an item has been selected.
-            mListener.onEventClick(mEvents.get(position).getId());
+            mListener.onListEventClick(mEvents.get(position));
         }
     }
 
@@ -132,14 +132,14 @@ public class ViewListEventsFragment extends Fragment implements AbsListView.OnIt
      * to the activity and potentially other fragments contained in that
      * activity.
      */
-    public interface OnEventClickListener {
+    public interface OnListEventClickListener {
 
         /**
          * When user clicks on an {@link com.geomarket.android.api.Event}
          *
-         * @param id The id of the event clicked
+         * @param event The event clicked
          */
-        public void onEventClick(String id);
+        public void onListEventClick(Event event);
     }
 
 }

@@ -17,6 +17,7 @@ import android.widget.TextView;
 
 import com.geomarket.android.R;
 import com.geomarket.android.api.Event;
+import com.geomarket.android.fragment.ViewEventDetailsFragment;
 import com.geomarket.android.fragment.ViewListEventsFragment;
 import com.geomarket.android.fragment.ViewMapEventsFragment;
 import com.geomarket.android.util.LogHelper;
@@ -28,11 +29,11 @@ import java.util.Locale;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
-public class ViewEventsActivity extends FragmentActivity implements ActionBar.TabListener, ViewListEventsFragment.OnEventClickListener {
+public class ViewEventsActivity extends FragmentActivity implements ActionBar.TabListener, ViewListEventsFragment.OnListEventClickListener, ViewMapEventsFragment.OnMapEventClickListener {
 
     public static final String EVENTS_EXTRA = "events_extra";
-
-    public static final String SAVED_STATE_ACTION_BAR_HIDDEN = "saved_state_action_bar_hidden";
+    private static final int MAP_VIEW = 0;
+    private static final int LIST_VIEW = 1;
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -62,14 +63,6 @@ public class ViewEventsActivity extends FragmentActivity implements ActionBar.Ta
     // To be filled in when event should be shown
     @InjectView(R.id.view_event_detail_title)
     TextView mEventTitleTextView;
-    @InjectView(R.id.view_event_detail_description)
-    TextView mEventDescTextView;
-    @InjectView(R.id.view_event_detail_location)
-    TextView mEventLocation;
-    @InjectView(R.id.view_event_detail_phone)
-    TextView mEventPhone;
-    @InjectView(R.id.view_event_detail_web_site)
-    TextView mEventWebSite;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,6 +90,10 @@ public class ViewEventsActivity extends FragmentActivity implements ActionBar.Ta
         mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
+                // Hide panel in list view
+                if (position == LIST_VIEW) {
+                    mDetailsPanelLayout.hidePanel();
+                }
                 actionBar.setSelectedNavigationItem(position);
             }
         });
@@ -118,6 +115,10 @@ public class ViewEventsActivity extends FragmentActivity implements ActionBar.Ta
             public void onPanelCollapsed(View panel) {
                 // View tabs when collapsed
                 actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+                if (mViewPager.getCurrentItem() == LIST_VIEW) {
+                    // TODO This isn't working for some reason
+                    mDetailsPanelLayout.hidePanel();
+                }
             }
 
             @Override
@@ -181,12 +182,6 @@ public class ViewEventsActivity extends FragmentActivity implements ActionBar.Ta
     public void onTabReselected(ActionBar.Tab tab, android.app.FragmentTransaction fragmentTransaction) {
     }
 
-    // Clicking an event in list view
-    @Override
-    public void onEventClick(String id) {
-        LogHelper.logInfo("Event " + id + " clicked");
-    }
-
     @Override
     public void onBackPressed() {
         if (mDetailsPanelLayout.isPanelExpanded()) {
@@ -196,24 +191,27 @@ public class ViewEventsActivity extends FragmentActivity implements ActionBar.Ta
         }
     }
 
-    /**
-     * Shows information about an event.
-     *
-     * @param event The event to view more info about.
-     */
-    public void viewEvent(Event event) {
+    // Clicking an event in list view
+    @Override
+    public void onListEventClick(Event event) {
         mEventTitleTextView.setText(event.getCompany().getName() + " " + event.getEventText().getHeading());
-        mEventDescTextView.setText(event.getEventText().getBody());
-        mEventLocation.setText(event.getCompany().getStreet() + event.getCompany().getStreetNr());
-        mEventPhone.setText(String.valueOf(event.getCompany().getPostalCode()));
-        mEventWebSite.setText(event.getCompany().getName() + ".com");
+        getFragmentManager().beginTransaction().replace(
+                R.id.view_event_fragment, ViewEventDetailsFragment.newInstance(event)).commit();
+        mDetailsPanelLayout.expandPanel();
+    }
+
+    // Clicking an event in map view
+    @Override
+    public void onMapEventClick(Event event) {
+        mEventTitleTextView.setText(event.getCompany().getName() + " " + event.getEventText().getHeading());
+        getFragmentManager().beginTransaction().replace(
+                R.id.view_event_fragment, ViewEventDetailsFragment.newInstance(event)).commit();
         mDetailsPanelLayout.showPanel();
     }
 
-    /**
-     * Hides the detail panel.
-     */
-    public void hideSlidingPanel() {
+    // Clicking somewhere on the map
+    @Override
+    public void onMapClick() {
         mDetailsPanelLayout.hidePanel();
     }
 
@@ -252,9 +250,9 @@ public class ViewEventsActivity extends FragmentActivity implements ActionBar.Ta
         public CharSequence getPageTitle(int position) {
             Locale l = Locale.getDefault();
             switch (position) {
-                case 0:
+                case MAP_VIEW:
                     return getString(R.string.title_fragment_view_map_events).toUpperCase(l);
-                case 1:
+                case LIST_VIEW:
                     return getString(R.string.title_fragment_view_list_events).toUpperCase(l);
             }
             return null;

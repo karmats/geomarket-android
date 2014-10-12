@@ -15,7 +15,7 @@ public class SplashActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_splash);
 
         // Fetch events near user
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
