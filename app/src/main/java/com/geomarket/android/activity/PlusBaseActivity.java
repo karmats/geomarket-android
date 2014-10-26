@@ -1,17 +1,23 @@
 package com.geomarket.android.activity;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.IntentSender;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.widget.Toast;
 
-import android.app.Activity;
-import android.util.Log;
-
+import com.geomarket.android.R;
+import com.geomarket.android.util.LogHelper;
+import com.google.android.gms.auth.GoogleAuthException;
+import com.google.android.gms.auth.GoogleAuthUtil;
+import com.google.android.gms.auth.UserRecoverableAuthException;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.common.Scopes;
 import com.google.android.gms.plus.PlusClient;
-import com.geomarket.android.R;
+
+import java.io.IOException;
 
 /**
  * A base class to wrap communication with the Google Play Services PlusClient.
@@ -20,16 +26,24 @@ public abstract class PlusBaseActivity extends Activity
         implements GooglePlayServicesClient.ConnectionCallbacks,
         GooglePlayServicesClient.OnConnectionFailedListener {
 
-    private static final String TAG = PlusBaseActivity.class.getSimpleName();
-
     // A magic number we will use to know that our sign-in error resolution activity has completed
     private static final int OUR_REQUEST_CODE = 49404;
+    // Request code for attempting a one time token from google+
+    static final int REQUEST_CODE_RECOVER_FROM_AUTH_ERROR = 200;
+
+    public static final String SHARED_PREFS_NAME = "GeoMarketPreferences";
+
+    // Shared preferences boolean if user logged in.
+    // TODO Should not be in production
+    static final String PREF_IS_LOGGED_IN = "isLoggedIn";
 
     // A flag to stop multiple dialogues appearing for the user
     private boolean mAutoResolveOnFail;
 
     // A flag to track when a connection is already in progress
     public boolean mPlusClientIsConnecting = false;
+
+    private boolean mTokenRequestActive = false;
 
     // This is the helper object that connects to Google Play Services.
     private PlusClient mPlusClient;
@@ -75,8 +89,7 @@ public abstract class PlusBaseActivity extends Activity
         // Initialize the PlusClient connection.
         // Scopes indicate the information about the user your application will be able to access.
         mPlusClient =
-                new PlusClient.Builder(this, this, this).setScopes(Scopes.PLUS_LOGIN,
-                        Scopes.PLUS_ME).build();
+                new PlusClient.Builder(this, this, this).setScopes(Scopes.PLUS_LOGIN).build();
     }
 
     /**
@@ -139,7 +152,8 @@ public abstract class PlusBaseActivity extends Activity
             // process from scratch.
             initiatePlusClientDisconnect();
 
-            Log.v(TAG, "Sign out successful!");
+            getSharedPreferences(SHARED_PREFS_NAME, MODE_PRIVATE).edit().putBoolean(PREF_IS_LOGGED_IN, false).commit();
+            LogHelper.logDebug("Sign out successful!");
         }
 
         updateConnectButtonState();
@@ -153,6 +167,8 @@ public abstract class PlusBaseActivity extends Activity
         if (mPlusClient.isConnected()) {
             // Clear the default account as in the Sign Out.
             mPlusClient.clearDefaultAccount();
+            // TODO Not like this
+            getSharedPreferences(SHARED_PREFS_NAME, MODE_PRIVATE).edit().putBoolean(PREF_IS_LOGGED_IN, false).commit();
 
             // Revoke access to this entire application. This will call back to
             // onAccessRevoked when it is complete, as it needs to reach the Google
@@ -230,14 +246,45 @@ public abstract class PlusBaseActivity extends Activity
             // If we've got an error we can't resolve, we're no longer in the midst of signing
             // in, so we can stop the progress spinner.
             setProgressBarVisible(false);
+        } else if (requestCode == REQUEST_CODE_RECOVER_FROM_AUTH_ERROR) {
+            // user has returned back from the permissions screen,
+            // if he/she has given enough permissions, retry the the request.
+            if (responseCode == RESULT_OK) {
+                Bundle extra = intent.getExtras();
+                String oneTimeToken = extra.getString("authtoken");
+                // TODO Remove with logic to backend
+                if (oneTimeToken != null) {
+                    LogHelper.logInfo("Got one time token! " + oneTimeToken);
+                    getSharedPreferences(SHARED_PREFS_NAME, MODE_PRIVATE).edit().putBoolean(PREF_IS_LOGGED_IN, true).commit();
+                } else {
+                    getToken();
+                }
+            } else if (responseCode == RESULT_CANCELED) {
+                // User cancelled operation
+                mTokenRequestActive = false;
+                Toast.makeText(this, R.string.pick_account, Toast.LENGTH_SHORT).show();
+            }
         }
     }
+
+    // Get one time token from google+ to sign in server side.
+    private void getToken() {
+        boolean loggedIn = getSharedPreferences(SHARED_PREFS_NAME, MODE_PRIVATE).getBoolean(PREF_IS_LOGGED_IN, false);
+        LogHelper.logInfo("Logged in? " + loggedIn);
+        if (!loggedIn && !mTokenRequestActive) {
+            mTokenRequestActive = true;
+            new GetTokenTask(this, getPlusClient().getAccountName()).execute();
+        }
+    }
+
 
     /**
      * Successfully connected (called by PlusClient)
      */
     @Override
     public void onConnected(Bundle connectionHint) {
+        // Get a one time token and sign in to dibbler
+        getToken();
         updateConnectButtonState();
         setProgressBarVisible(false);
         onPlusClientSignIn();
@@ -248,6 +295,7 @@ public abstract class PlusBaseActivity extends Activity
      */
     @Override
     public void onDisconnected() {
+        getSharedPreferences(SHARED_PREFS_NAME, MODE_PRIVATE).edit().putBoolean(PREF_IS_LOGGED_IN, false).commit();
         updateConnectButtonState();
         onPlusClientSignOut();
     }
@@ -280,4 +328,60 @@ public abstract class PlusBaseActivity extends Activity
         return mPlusClient;
     }
 
+    /**
+     * Get a one time token from Google+ oauth2
+     */
+    public class GetTokenTask extends AsyncTask<Void, Void, String> {
+        private static final String CLIENT_ID = "446637837872-ctf49ogkcrk0dmgemff8j6ck9guii73q.apps.googleusercontent.com";
+
+        private Activity mActivity;
+        private String mAccountName;
+
+        GetTokenTask(Activity activity, String name) {
+            this.mActivity = activity;
+            this.mAccountName = name;
+        }
+
+        /**
+         * Executes the asynchronous job. This runs when you call execute()
+         * on the AsyncTask instance.
+         */
+        @Override
+        protected String doInBackground(Void... params) {
+            try {
+                String token = fetchToken();
+                LogHelper.logInfo("Got token " + token);
+                // TODO Replace with call to backend
+                getSharedPreferences(LoginActivity.SHARED_PREFS_NAME, MODE_PRIVATE).edit().putBoolean(LoginActivity.PREF_IS_LOGGED_IN, true);
+                return token;
+            } catch (IOException e) {
+                // The fetchToken() method handles Google-specific exceptions,
+                // so this indicates something went wrong at a higher level.
+                // TIP: Check for network connectivity before starting the AsyncTask.
+            }
+            return null;
+        }
+
+        /**
+         * Gets an authentication token from Google and handles any
+         * GoogleAuthException that may occur.
+         */
+        protected String fetchToken() throws IOException {
+            String scope = "oauth2:server:client_id:" + CLIENT_ID + ":api_scope:" + Scopes.PLUS_LOGIN;
+            LogHelper.logInfo(scope);
+            try {
+                return GoogleAuthUtil.getToken(mActivity, mAccountName, scope);
+            } catch (UserRecoverableAuthException e) {
+                // GooglePlayServices.apk is either old, disabled, or not present
+                // so we need to show the user some UI in the activity to recover.
+                LogHelper.logException(e);
+                startActivityForResult(e.getIntent(), REQUEST_CODE_RECOVER_FROM_AUTH_ERROR);
+            } catch (GoogleAuthException e) {
+                // Some other type of unrecoverable exception has occurred.
+                // Report and log the error as appropriate for your app.
+                LogHelper.logException(e);
+            }
+            return null;
+        }
+    }
 }

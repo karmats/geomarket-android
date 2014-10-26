@@ -2,6 +2,7 @@ package com.geomarket.android.activity;
 
 import android.app.ActionBar;
 import android.content.Context;
+import android.content.Intent;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -161,7 +162,8 @@ public class ViewEventsActivity extends FragmentActivity implements ActionBar.Ta
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_login) {
+            startActivity(new Intent(ViewEventsActivity.this, LoginActivity.class));
             return true;
         }
         return super.onOptionsItemSelected(item);
