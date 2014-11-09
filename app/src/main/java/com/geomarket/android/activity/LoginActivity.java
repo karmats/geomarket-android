@@ -26,6 +26,7 @@ import android.widget.TextView;
 
 import com.geomarket.android.R;
 import com.geomarket.android.fragment.ViewMapEventsFragment;
+import com.geomarket.android.task.AuthenticateToDibblerTask;
 import com.geomarket.android.util.LogHelper;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -380,6 +381,12 @@ public class LoginActivity extends PlusBaseActivity implements LoaderCallbacks<C
     protected void onPlusClientSignOut() {
     }
 
+    @Override
+    protected void onPlusTokenFetched(String token) {
+        // We are authorized, let's authenticate!
+        LogHelper.logInfo("We got a token! " + token);
+        new AuthenticateToDibblerTask(this, AuthenticateToDibblerTask.AuthenticateService.GOOGLE).execute(token);
+    }
 }
 
 

@@ -82,6 +82,13 @@ public abstract class PlusBaseActivity extends Activity
      */
     protected abstract void updateConnectButtonState();
 
+    /**
+     * Called when the one time use plus token is fetched from google+ service
+     *
+     * @param token The one time token to use server side
+     */
+    protected abstract void onPlusTokenFetched(String token);
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -254,7 +261,7 @@ public abstract class PlusBaseActivity extends Activity
                 String oneTimeToken = extra.getString("authtoken");
                 // TODO Remove with logic to backend
                 if (oneTimeToken != null) {
-                    LogHelper.logInfo("Got one time token! " + oneTimeToken);
+                    onPlusTokenFetched(oneTimeToken);
                     getSharedPreferences(SHARED_PREFS_NAME, MODE_PRIVATE).edit().putBoolean(PREF_IS_LOGGED_IN, true).commit();
                 } else {
                     getToken();
@@ -334,10 +341,10 @@ public abstract class PlusBaseActivity extends Activity
     public class GetTokenTask extends AsyncTask<Void, Void, String> {
         private static final String CLIENT_ID = "446637837872-ctf49ogkcrk0dmgemff8j6ck9guii73q.apps.googleusercontent.com";
 
-        private Activity mActivity;
+        private PlusBaseActivity mActivity;
         private String mAccountName;
 
-        GetTokenTask(Activity activity, String name) {
+        GetTokenTask(PlusBaseActivity activity, String name) {
             this.mActivity = activity;
             this.mAccountName = name;
         }
@@ -350,7 +357,6 @@ public abstract class PlusBaseActivity extends Activity
         protected String doInBackground(Void... params) {
             try {
                 String token = fetchToken();
-                LogHelper.logInfo("Got token " + token);
                 // TODO Replace with call to backend
                 getSharedPreferences(LoginActivity.SHARED_PREFS_NAME, MODE_PRIVATE).edit().putBoolean(LoginActivity.PREF_IS_LOGGED_IN, true);
                 return token;
@@ -360,6 +366,11 @@ public abstract class PlusBaseActivity extends Activity
                 // TIP: Check for network connectivity before starting the AsyncTask.
             }
             return null;
+        }
+
+        @Override
+        protected void onPostExecute(String token) {
+            mActivity.onPlusTokenFetched(token);
         }
 
         /**
