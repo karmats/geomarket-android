@@ -16,7 +16,7 @@ import com.geomarket.android.api.service.GeoMarketServiceApiBuilder;
 public class AuthenticateToDibblerTask extends AsyncTask<String, Void, AuthenticatedUser> {
 
     public enum AuthenticateService {
-        GOOGLE("google"), FACEBOOK("facebook")
+        GOOGLE("google"), FACEBOOK("facebook");
 
         private String mPostParam;
 
