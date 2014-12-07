@@ -25,7 +25,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.geomarket.android.R;
-import com.geomarket.android.fragment.ViewMapEventsFragment;
+import com.geomarket.android.fragment.ViewEventsFragment;
 import com.geomarket.android.task.AuthenticateToDibblerTask;
 import com.geomarket.android.util.LogHelper;
 import com.google.android.gms.common.ConnectionResult;
@@ -107,7 +107,7 @@ public class LoginActivity extends PlusBaseActivity implements LoaderCallbacks<C
                 // Just start the ViewEventsActivity
                 // TODO Remove when we have some logic to this
                 LogHelper.logInfo("Starting View events activity");
-                startActivity(new Intent(LoginActivity.this, ViewMapEventsFragment.class));
+                startActivity(new Intent(LoginActivity.this, ViewEventsFragment.class));
             }
         });
 

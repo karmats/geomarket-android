@@ -1,18 +1,14 @@
 package com.geomarket.android.task;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.location.Location;
 import android.os.AsyncTask;
-import android.os.Parcelable;
 
-import com.geomarket.android.activity.ViewEventsActivity;
+import com.geomarket.android.api.ApiResult;
 import com.geomarket.android.api.Event;
 import com.geomarket.android.api.service.GeoMarketServiceApi;
 import com.geomarket.android.api.service.GeoMarketServiceApiBuilder;
 import com.geomarket.android.util.LogHelper;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import retrofit.RetrofitError;
@@ -20,37 +16,50 @@ import retrofit.RetrofitError;
 /**
  * Task to fetch a list of events.
  */
-public class FetchEventsTask extends AsyncTask<Location, Void, List<Event>> {
+public class FetchEventsTask extends AsyncTask<Location, Void, ApiResult<List<Event>>> {
 
     // Calling activity
-    // TODO Change this
-    private Activity mContext;
+    private OnEventsFetchedCallback mCallback;
     // Api
     private GeoMarketServiceApi api;
 
-    public FetchEventsTask(Activity context) {
-        this.mContext = context;
+    public FetchEventsTask(OnEventsFetchedCallback callback) {
+        this.mCallback = callback;
         this.api = GeoMarketServiceApiBuilder.newInstance();
     }
 
     @Override
-    protected void onPostExecute(List<Event> events) {
-        Intent viewEventsActivity = new Intent(mContext.getApplicationContext(), ViewEventsActivity.class);
-        viewEventsActivity.putParcelableArrayListExtra(ViewEventsActivity.EVENTS_EXTRA, new ArrayList<Parcelable>(events));
-        mContext.startActivity(viewEventsActivity);
-        mContext.finish();
+    protected ApiResult<List<Event>> doInBackground(Location... locations) {
+        Location loc = locations[0];
+        try {
+            ApiResult<List<Event>> res = api.getEventsForLocation(loc.getLatitude(), loc.getLongitude(), 200, "EN");
+            return res;
+        } catch (RetrofitError e) {
+            LogHelper.logException(e);
+            return null;
+        }
     }
 
     @Override
-    protected List<Event> doInBackground(Location... locations) {
-        Location loc = locations[0];
-        List<Event> result = new ArrayList<Event>();
-        try {
-            result = api.getEventsForLocation(loc.getLatitude(), loc.getLongitude(), 200, "EN");
-        } catch (RetrofitError e) {
-            LogHelper.logException(e);
+    protected void onPostExecute(ApiResult<List<Event>> listApiResult) {
+        // Ok
+        if (listApiResult.getCode() == 200) {
+            mCallback.onEventsFetched(listApiResult.getData());
+            LogHelper.logInfo("Got list of " + listApiResult.getData().size());
+        } else {
+            mCallback.onEventsFetchedFailure("Failed to fetch events error code " + listApiResult.getCode());
         }
-        LogHelper.logInfo("Got list of " + result.size());
-        return result;
+    }
+
+    /**
+     * Callbacks for this task
+     */
+    public interface OnEventsFetchedCallback {
+        /**
+         * @param events Events result
+         */
+        void onEventsFetched(List<Event> events);
+
+        void onEventsFetchedFailure(String error);
     }
 }

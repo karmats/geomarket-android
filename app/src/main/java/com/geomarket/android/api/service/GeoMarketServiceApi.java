@@ -1,5 +1,6 @@
 package com.geomarket.android.api.service;
 
+import com.geomarket.android.api.ApiResult;
 import com.geomarket.android.api.AuthenticatedUser;
 import com.geomarket.android.api.Event;
 
@@ -38,7 +39,7 @@ public interface GeoMarketServiceApi {
      * @return
      */
     @GET(EVENTS_SVC_PATH)
-    List<Event> getEventsForLocation(@Query(LAT_PARAM) Double lat, @Query(LON_PARAM) Double lon,
+    ApiResult<List<Event>> getEventsForLocation(@Query(LAT_PARAM) Double lat, @Query(LON_PARAM) Double lon,
                                      @Query(RADIUS_PARAM) Integer radius, @Query(LANG_PARAM) String lang);
 
     /**

@@ -4,11 +4,12 @@
     android:layout_height="match_parent">
 
     <FrameLayout
-        android:id="@+id/map_container"
+        android:id="@+id/view_events_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
     <ImageButton
+        android:id="@+id/map_list_btn"
         android:layout_width="@dimen/round_button_diameter"
         android:layout_height="@dimen/round_button_diameter"
         android:layout_gravity="right|bottom"
@@ -16,6 +17,7 @@
         android:layout_marginRight="@dimen/activity_horizontal_margin"
         android:background="@drawable/oval"
         android:src="@drawable/ic_list"
-        android:tint="@android:color/white" />
+        android:tint="@android:color/white"
+        android:elevation="@dimen/elevation_high"/>
 
 </FrameLayout>

@@ -14,9 +14,10 @@ import android.widget.TextView;
 
 import com.geomarket.android.R;
 import com.geomarket.android.api.Event;
+import com.geomarket.android.fragment.MapEventsFragment;
 import com.geomarket.android.fragment.ViewEventDetailsFragment;
+import com.geomarket.android.fragment.ViewEventsFragment;
 import com.geomarket.android.fragment.ViewListEventsFragment;
-import com.geomarket.android.fragment.ViewMapEventsFragment;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.util.ArrayList;
@@ -24,7 +25,7 @@ import java.util.ArrayList;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
-public class ViewEventsActivity extends ActionBarActivity implements ViewListEventsFragment.OnListEventClickListener, ViewMapEventsFragment.OnMapEventClickListener {
+public class ViewEventsActivity extends ActionBarActivity implements ViewListEventsFragment.OnListEventClickListener, MapEventsFragment.OnMapEventClickListener {
 
     public static final String EVENTS_EXTRA = "events_extra";
 
@@ -57,15 +58,10 @@ public class ViewEventsActivity extends ActionBarActivity implements ViewListEve
 
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         mLatestLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-        if (mLatestLocation == null) {
-            mLatestLocation = new Location("MATS");
-            mLatestLocation.setLatitude(12.3);
-            mLatestLocation.setLongitude(12.3);
-        }
 
         // Show the view map fragment
         getFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                ViewMapEventsFragment.newInstance(mEvents, new Event.Location(mLatestLocation.getLatitude(), mLatestLocation.getLongitude()))).
+                ViewEventsFragment.newInstance(mEvents, new Event.Location(mLatestLocation.getLatitude(), mLatestLocation.getLongitude()))).
                 setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE).addToBackStack(null).commit();
 
         // Inject the views

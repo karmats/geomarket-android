@@ -1,6 +1,7 @@
 package com.geomarket.android.fragment;
 
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
 
@@ -14,6 +15,8 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -24,19 +27,22 @@ public class MapEventsFragment extends MapFragment {
     private static final String EVENTS_PARAM = "events_param";
     private static final String LOCATION_PARAM = "location_param";
 
+    private OnMapEventClickListener mListener;
+
     private ArrayList<Event> mEvents;
     private Event.Location mLocation;
+
+    private Map<String, Event> mMarkerIdEventMap = new HashMap<>();
 
 
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param events   Parameter 1.
-     * @param location Parameter 2.
+     * @param events   The events to show on the map.
+     * @param location The initial location.
      * @return A new instance of fragment MapEventsFragment.
      */
-    // TODO: Rename and change types and number of parameters
     public static MapEventsFragment newInstance(ArrayList<Event> events, Event.Location location) {
         MapEventsFragment fragment = new MapEventsFragment();
         Bundle args = new Bundle();
@@ -70,12 +76,13 @@ public class MapEventsFragment extends MapFragment {
                 LogHelper.logInfo("Location from event: " + e.getLocation());
                 if (e.getLocation() != null) {
                     Marker m = mMap.addMarker(new MarkerOptions().position(e.getLocation().toLatLng()));
+                    mMarkerIdEventMap.put(m.getId(), e);
                 }
             }
             mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
                 @Override
                 public void onMapClick(LatLng latLng) {
-
+                    mListener.onMapClick();
                 }
             });
             // When user clicks on a marker, show the event details view
@@ -83,6 +90,7 @@ public class MapEventsFragment extends MapFragment {
                 @Override
                 public boolean onMarkerClick(Marker marker) {
                     // Animate to the marker
+                    mListener.onMapEventClick(mMarkerIdEventMap.get(marker.getId()));
                     mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(marker.getPosition(), mMap.getCameraPosition().zoom), 300, null);
                     return true;
                 }
@@ -91,4 +99,44 @@ public class MapEventsFragment extends MapFragment {
             LogHelper.logError("Google map is null, any chance that Google Services isn't installed?");
         }
     }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        try {
+            mListener = (OnMapEventClickListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                    + " must implement OnFragmentInteractionListener");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
+    }
+
+
+    /**
+     * This interface must be implemented by activities that contain this
+     * fragment to allow an interaction in this fragment to be communicated
+     * to the activity and potentially other fragments contained in that
+     * activity.
+     */
+    public interface OnMapEventClickListener {
+
+        /**
+         * When user clicks on an {@link com.geomarket.android.api.Event}
+         *
+         * @param event The event clicked
+         */
+        public void onMapEventClick(Event event);
+
+        /**
+         * When user clicks somewhere on the map (not on marker)
+         */
+        public void onMapClick();
+    }
+
 }
