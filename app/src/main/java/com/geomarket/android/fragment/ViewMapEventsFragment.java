@@ -1,16 +1,18 @@
 package com.geomarket.android.fragment;
 
 import android.app.Activity;
+import android.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.geomarket.android.R;
 import com.geomarket.android.api.Event;
 import com.geomarket.android.util.LogHelper;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -19,13 +21,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ViewMapEventsFragment extends SupportMapFragment {
+public class ViewMapEventsFragment extends Fragment {
     private static String EVENTS_PARAM = "events_param";
     private static String LOCATION_PARAM = "location_param";
 
     private OnMapEventClickListener mListener;
 
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
+    private MapFragment mMapFragment;
+
+    private ArrayList<Event> mEvents;
+    private Event.Location mLocation;
 
     private Map<String, Event> mMarkerIdEventMap = new HashMap<String, Event>();
 
@@ -41,15 +47,23 @@ public class ViewMapEventsFragment extends SupportMapFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup view, Bundle bundle) {
-        View v = super.onCreateView(inflater, view, bundle);
-        ArrayList<Event> events = getArguments().getParcelableArrayList(EVENTS_PARAM);
-        Event.Location location = getArguments().getParcelable(LOCATION_PARAM);
-        setUpMap(events, location);
+        View v = inflater.inflate(R.layout.fragment_view_map_events, view, false);
+        mEvents = getArguments().getParcelableArrayList(EVENTS_PARAM);
+        mLocation = getArguments().getParcelable(LOCATION_PARAM);
+        mMapFragment = MapEventsFragment.newInstance(mEvents, mLocation);
+        getFragmentManager().beginTransaction().replace(R.id.map_container, mMapFragment).commit();
+        //setUpMap(mEvents, mLocation);
         return v;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        //setUpMap(mEvents, mLocation);
+    }
+
     private void setUpMap(ArrayList<Event> events, Event.Location location) {
-        mMap = getMap();
+        mMap = mMapFragment.getMap();
         if (mMap != null) {
             mMap.setMyLocationEnabled(true);
             mMap.getUiSettings().setZoomControlsEnabled(false);
@@ -61,26 +75,25 @@ public class ViewMapEventsFragment extends SupportMapFragment {
                     mMarkerIdEventMap.put(m.getId(), e);
                 }
             }
+            mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+                @Override
+                public void onMapClick(LatLng latLng) {
+                    mListener.onMapClick();
+                }
+            });
+            // When user clicks on a marker, show the event details view
+            mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                @Override
+                public boolean onMarkerClick(Marker marker) {
+                    // Animate to the marker
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(marker.getPosition(), mMap.getCameraPosition().zoom), 300, null);
+                    mListener.onMapEventClick(mMarkerIdEventMap.get(marker.getId()));
+                    return true;
+                }
+            });
         } else {
             LogHelper.logError("Google map is null, any chance that Google Services isn't installed?");
         }
-
-        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-            @Override
-            public void onMapClick(LatLng latLng) {
-                mListener.onMapClick();
-            }
-        });
-        // When user clicks on a marker, show the event details view
-        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-            @Override
-            public boolean onMarkerClick(Marker marker) {
-                // Animate to the marker
-                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(marker.getPosition(), mMap.getCameraPosition().zoom), 300, null);
-                mListener.onMapEventClick(mMarkerIdEventMap.get(marker.getId()));
-                return true;
-            }
-        });
     }
 
     @Override

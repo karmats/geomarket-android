@@ -31,5 +31,6 @@
     <string name="action_settings">Settings</string>
     <string name="action_login">Log in</string>
     <string name="pick_account">You must allow the app to sign in to your google+ account</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>
