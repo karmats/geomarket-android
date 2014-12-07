@@ -1,11 +1,11 @@
 package com.geomarket.android.activity;
 
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -32,12 +32,7 @@ public class ViewEventsActivity extends ActionBarActivity implements ViewListEve
     /**
      * The {@link SlidingUpPanelLayout} that will show details about an event.
      */
-    SlidingUpPanelLayout mDetailsPanelLayout;
-
-    // Latest known location
-    private Location mLatestLocation;
-    // The events
-    private ArrayList<Event> mEvents = new ArrayList<Event>();
+    private SlidingUpPanelLayout mDetailsPanelLayout;
 
     // To be filled in when event should be shown
     @InjectView(R.id.view_event_detail_title)
@@ -51,17 +46,17 @@ public class ViewEventsActivity extends ActionBarActivity implements ViewListEve
         setSupportActionBar((Toolbar) findViewById(R.id.main_toolbar));
 
         // Get the events from extra
-        mEvents = getIntent().getParcelableArrayListExtra(EVENTS_EXTRA);
+        ArrayList<Event> events = getIntent().getParcelableArrayListExtra(EVENTS_EXTRA);
 
         // Sliding up panel
         mDetailsPanelLayout = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
 
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        mLatestLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+        Location latestLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 
         // Show the view map fragment
         getFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                ViewEventsFragment.newInstance(mEvents, new Event.Location(mLatestLocation.getLatitude(), mLatestLocation.getLongitude()))).
+                ViewEventsFragment.newInstance(events, new Event.Location(latestLocation.getLatitude(), latestLocation.getLongitude()))).
                 setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE).addToBackStack(null).commit();
 
         // Inject the views

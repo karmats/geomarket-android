@@ -56,17 +56,17 @@ public class ViewEventsFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup view, Bundle bundle) {
-        View v = inflater.inflate(R.layout.fragment_view_map_events, view, false);
+        View v = inflater.inflate(R.layout.fragment_view_events, view, false);
         ButterKnife.inject(this, v);
 
         // Set up the map
         mMapFragment = MapEventsFragment.newInstance(mEvents, mLocation);
-        getFragmentManager().beginTransaction().replace(R.id.view_events_container, mMapFragment).commit();
-        mViewType = ViewType.MAP;
 
         // Set up the list fragment
         mListEventsFragment = ViewListEventsFragment.newInstance(mEvents);
 
+        getFragmentManager().beginTransaction().replace(R.id.view_events_container, mMapFragment).commit();
+        mViewType = ViewType.MAP;
         return v;
     }
 
