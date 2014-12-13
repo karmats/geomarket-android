@@ -2,6 +2,7 @@ package com.geomarket.android.api.service;
 
 import com.geomarket.android.api.ApiResult;
 import com.geomarket.android.api.AuthenticatedUser;
+import com.geomarket.android.api.Category;
 import com.geomarket.android.api.Event;
 
 import java.util.List;
@@ -17,6 +18,7 @@ import retrofit.http.Query;
 public interface GeoMarketServiceApi {
 
     static final String EVENTS_SVC_PATH = "/Geomarket/webresources/events/byLocation";
+    static final String CATEGORIES_SVC_PATH = "/Geomarket/webresources/categories";
     static final String AUTH_SVC_PATH = "/Geomarket/webresources/auth";
 
     // Event parameters
@@ -30,17 +32,25 @@ public interface GeoMarketServiceApi {
     static final String AUTH_TOKEN_HEADER = "Auth-Token";
 
     /**
-     * Gets all events near a specific location
+     * Gets all events near a specific location.
      *
      * @param lat    The location lat point
      * @param lon    The location lon point
      * @param radius The radius in meters to fetch events for
      * @param lang   The language
-     * @return
+     * @return ApiResults
      */
     @GET(EVENTS_SVC_PATH)
     ApiResult<List<Event>> getEventsForLocation(@Query(LAT_PARAM) Double lat, @Query(LON_PARAM) Double lon,
-                                     @Query(RADIUS_PARAM) Integer radius, @Query(LANG_PARAM) String lang);
+                                                @Query(RADIUS_PARAM) Integer radius, @Query(LANG_PARAM) String lang);
+
+    /**
+     * Get all GeoMarket categories.
+     *
+     * @return ApiResult
+     */
+    @GET(CATEGORIES_SVC_PATH)
+    ApiResult<List<Category>> getCategories();
 
     /**
      * Authenticates a user.

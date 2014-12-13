@@ -21,33 +21,33 @@ public class FetchEventsTask extends AsyncTask<Location, Void, ApiResult<List<Ev
     // Calling activity
     private OnEventsFetchedCallback mCallback;
     // Api
-    private GeoMarketServiceApi api;
+    private GeoMarketServiceApi mApi;
 
     public FetchEventsTask(OnEventsFetchedCallback callback) {
         this.mCallback = callback;
-        this.api = GeoMarketServiceApiBuilder.newInstance();
+        this.mApi = GeoMarketServiceApiBuilder.newInstance();
     }
 
     @Override
     protected ApiResult<List<Event>> doInBackground(Location... locations) {
         Location loc = locations[0];
         try {
-            ApiResult<List<Event>> res = api.getEventsForLocation(loc.getLatitude(), loc.getLongitude(), 200, "EN");
-            return res;
+            return mApi.getEventsForLocation(loc.getLatitude(), loc.getLongitude(), 200, "EN");
         } catch (RetrofitError e) {
             LogHelper.logException(e);
-            return null;
         }
+        return null;
     }
 
     @Override
     protected void onPostExecute(ApiResult<List<Event>> listApiResult) {
-        // Ok
-        if (listApiResult.getCode() == 200) {
-            mCallback.onEventsFetched(listApiResult.getData());
-            LogHelper.logInfo("Got list of " + listApiResult.getData().size());
+        if (listApiResult == null) {
+            mCallback.onEventsFetchedFailure("Failed to fetch events");
+        } else if (listApiResult.getCode() < 200 || listApiResult.getCode() >= 300) {
+            mCallback.onEventsFetchedFailure("Failed to fetch events. Error code " + listApiResult.getCode());
         } else {
-            mCallback.onEventsFetchedFailure("Failed to fetch events error code " + listApiResult.getCode());
+            LogHelper.logInfo("Got category list of " + listApiResult.getData().size());
+            mCallback.onEventsFetched(listApiResult.getData());
         }
     }
 
@@ -55,11 +55,15 @@ public class FetchEventsTask extends AsyncTask<Location, Void, ApiResult<List<Ev
      * Callbacks for this task
      */
     public interface OnEventsFetchedCallback {
+
         /**
          * @param events Events result
          */
         void onEventsFetched(List<Event> events);
 
+        /**
+         * @param error Error message
+         */
         void onEventsFetchedFailure(String error);
     }
 }
