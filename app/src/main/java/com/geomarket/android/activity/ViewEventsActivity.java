@@ -28,6 +28,7 @@ import butterknife.InjectView;
 public class ViewEventsActivity extends ActionBarActivity implements ViewListEventsFragment.OnListEventClickListener, MapEventsFragment.OnMapEventClickListener {
 
     public static final String EVENTS_EXTRA = "events_extra";
+    public static final String CATEGORIES_EXTRA = "categories_extra";
 
     /**
      * The {@link SlidingUpPanelLayout} that will show details about an event.
