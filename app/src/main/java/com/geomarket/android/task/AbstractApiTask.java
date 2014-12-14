@@ -1,4 +1,4 @@
-package com.geomarket.android.fragment;
+package com.geomarket.android.task;
 
 import android.os.AsyncTask;
 

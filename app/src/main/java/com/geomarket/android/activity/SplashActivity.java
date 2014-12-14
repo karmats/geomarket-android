@@ -13,7 +13,7 @@ import android.widget.Toast;
 import com.geomarket.android.R;
 import com.geomarket.android.api.Category;
 import com.geomarket.android.api.Event;
-import com.geomarket.android.fragment.AbstractApiTask;
+import com.geomarket.android.task.AbstractApiTask;
 import com.geomarket.android.task.FetchCategoriesTask;
 import com.geomarket.android.task.FetchEventsTask;
 

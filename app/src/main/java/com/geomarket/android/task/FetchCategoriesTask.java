@@ -2,7 +2,6 @@ package com.geomarket.android.task;
 
 import com.geomarket.android.api.ApiResult;
 import com.geomarket.android.api.Category;
-import com.geomarket.android.fragment.AbstractApiTask;
 import com.geomarket.android.util.LogHelper;
 
 import java.util.List;

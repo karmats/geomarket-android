@@ -4,7 +4,6 @@ import android.location.Location;
 
 import com.geomarket.android.api.ApiResult;
 import com.geomarket.android.api.Event;
-import com.geomarket.android.fragment.AbstractApiTask;
 import com.geomarket.android.util.LogHelper;
 
 import java.util.List;
