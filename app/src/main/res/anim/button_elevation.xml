@@ -4,7 +4,6 @@
         <objectAnimator
             android:duration="@android:integer/config_shortAnimTime"
             android:propertyName="translationZ"
-            android:valueFrom="@dimen/elevation_low"
             android:valueTo="@dimen/elevation_high"
             android:valueType="floatType" />
     </item>
@@ -12,8 +11,7 @@
         <objectAnimator
             android:duration="@android:integer/config_shortAnimTime"
             android:propertyName="translationZ"
-            android:valueFrom="@dimen/elevation_high"
-            android:valueTo="@dimen/elevation_low"
+            android:valueTo="0"
             android:valueType="floatType" />
     </item>
 </selector>
