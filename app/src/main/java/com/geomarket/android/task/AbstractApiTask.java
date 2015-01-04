@@ -32,6 +32,11 @@ public abstract class AbstractApiTask<P, R> extends AsyncTask<P, Void, ApiResult
         }
     }
 
+    /**
+     * Callback for success and failure.
+     *
+     * @param <R> The expected return type
+     */
     public interface ApiCallback<R> {
         void onSuccess(R result);
 

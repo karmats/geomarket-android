@@ -65,7 +65,7 @@ public class ViewEventDetailsFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_view_event_details, container, false);
         ButterKnife.inject(this, view);
-        mEventDescTextView.setText(mEvent.getEventText().getBody());
+        mEventDescTextView.setText(mEvent.getText().getBody());
         mEventLocation.setText(mEvent.getCompany().getStreet() + mEvent.getCompany().getStreetNr());
         mEventPhone.setText(String.valueOf(mEvent.getCompany().getPostalCode()));
         mEventWebSite.setText(mEvent.getCompany().getName() + ".com");

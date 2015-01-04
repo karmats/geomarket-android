@@ -10,8 +10,7 @@ import android.os.Parcelable;
 public class Category implements Parcelable {
 
     private String id;
-    private String defaultName;
-    private String description;
+    private String name;
 
     public Category() {
     }
@@ -19,8 +18,7 @@ public class Category implements Parcelable {
     public Category(Parcel source) {
         Bundle data = source.readBundle(getClass().getClassLoader());
         this.id = data.getString("id");
-        this.defaultName = data.getString("defaultName");
-        this.description = data.getString("description");
+        this.name = data.getString("name");
     }
 
     public static final Parcelable.Creator<Category> CREATOR = new Parcelable.Creator<Category>() {
@@ -43,8 +41,7 @@ public class Category implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         Bundle data = new Bundle();
         data.putString("id", id);
-        data.putString("defaultName", defaultName);
-        data.putString("description", description);
+        data.putString("name", name);
         dest.writeBundle(data);
     }
 
@@ -56,19 +53,16 @@ public class Category implements Parcelable {
         this.id = id;
     }
 
-    public String getDefaultName() {
-        return defaultName;
+    public String getName() {
+        return name;
     }
 
-    public void setDefaultName(String defaultName) {
-        this.defaultName = defaultName;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
+    @Override
+    public String toString() {
+        return name;
     }
 }

@@ -4,12 +4,14 @@ import com.geomarket.android.api.ApiResult;
 import com.geomarket.android.api.AuthenticatedUser;
 import com.geomarket.android.api.Category;
 import com.geomarket.android.api.Event;
+import com.geomarket.android.api.Language;
 
 import java.util.List;
 
 import retrofit.http.GET;
 import retrofit.http.Header;
 import retrofit.http.POST;
+import retrofit.http.Path;
 import retrofit.http.Query;
 
 /**
@@ -17,9 +19,12 @@ import retrofit.http.Query;
  */
 public interface GeoMarketServiceApi {
 
-    static final String EVENTS_SVC_PATH = "/Geomarket/webresources/events/byLocation";
-    static final String CATEGORIES_SVC_PATH = "/Geomarket/webresources/categories";
-    static final String AUTH_SVC_PATH = "/Geomarket/webresources/auth";
+    static final String BASE_SVC_PATH = "/dibbler/resource";
+    static final String EVENTS_SVC_PATH = BASE_SVC_PATH + "/events/byLocation";
+    static final String CATEGORIES_SVC_PATH = BASE_SVC_PATH + "/categories";
+    static final String CATEGORIES_BY_LANGUAGE_SVC_PATH = BASE_SVC_PATH + "/categories/language/{langId}";
+    static final String LANGUAGES_SVC_PATH = BASE_SVC_PATH + "/languages";
+    static final String AUTH_SVC_PATH = BASE_SVC_PATH + "/auth";
 
     // Event parameters
     static final String RADIUS_PARAM = "radius";
@@ -51,6 +56,23 @@ public interface GeoMarketServiceApi {
      */
     @GET(CATEGORIES_SVC_PATH)
     ApiResult<List<Category>> getCategories();
+
+    /**
+     * Get all GeoMarket categories for a specific language.
+     *
+     * @param languageId Id of the language fetched from getLanguages()
+     * @return ApiResult
+     */
+    @GET(CATEGORIES_BY_LANGUAGE_SVC_PATH)
+    ApiResult<List<Category>> getCategoriesByLanguage(@Path("langId") String languageId);
+
+    /**
+     * Get all GeoMarket supported languages.
+     *
+     * @return ApiResult
+     */
+    @GET(LANGUAGES_SVC_PATH)
+    ApiResult<List<Language>> getLanguages();
 
     /**
      * Authenticates a user.

@@ -1,5 +1,6 @@
 package com.geomarket.android.fragment;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
@@ -30,6 +31,8 @@ public class ViewEventsFragment extends Fragment {
     private ViewListEventsFragment mListEventsFragment;
 
     private ViewType mViewType;
+
+    private OnLayoutChangeListener mListener;
 
     @InjectView(R.id.map_list_btn)
     ImageButton mToggleMapListBtn;
@@ -78,19 +81,50 @@ public class ViewEventsFragment extends Fragment {
             mViewType = ViewType.LIST;
             // Set map icon
             mToggleMapListBtn.setImageDrawable(getResources().getDrawable(R.drawable.ic_map));
+            mListener.onLayoutChange(ViewType.LIST);
         } else {
             mViewType = ViewType.MAP;
             // Set list icon
             mToggleMapListBtn.setImageDrawable(getResources().getDrawable(R.drawable.ic_list));
+            mListener.onLayoutChange(ViewType.MAP);
         }
         getFragmentManager().beginTransaction().replace(R.id.view_events_container, newFragment)
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE).commit();
     }
 
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        try {
+            mListener = (OnLayoutChangeListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                    + " must implement OnLayoutChangedListener");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
+    }
+
     /**
      * Enum to describe current view type
      */
-    private enum ViewType {
+    public enum ViewType {
         MAP, LIST
+    }
+
+    /**
+     * When layout changes
+     */
+    public interface OnLayoutChangeListener {
+        /**
+         * Called when the layout has changed
+         *
+         * @param type The ViewType layout it has changed to
+         */
+        void onLayoutChange(ViewType type);
     }
 }

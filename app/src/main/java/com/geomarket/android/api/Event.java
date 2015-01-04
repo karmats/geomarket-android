@@ -16,7 +16,7 @@ public class Event implements Parcelable {
     private Long expires;
     private String eventTypeId;
     private Location location;
-    private EventText eventText;
+    private Text text;
     private Company company;
 
     public Event() {
@@ -29,7 +29,7 @@ public class Event implements Parcelable {
         expires = data.getLong("expires");
         eventTypeId = data.getString("eventTypeId");
         location = data.getParcelable("location");
-        eventText = data.getParcelable("eventText");
+        text = data.getParcelable("text");
         company = data.getParcelable("company");
     }
 
@@ -51,7 +51,7 @@ public class Event implements Parcelable {
         data.putLong("expires", expires);
         data.putString("eventTypeId", eventTypeId);
         data.putParcelable("location", location);
-        data.putParcelable("eventText", eventText);
+        data.putParcelable("text", text);
         data.putParcelable("company", company);
         dest.writeBundle(data);
     }
@@ -101,12 +101,12 @@ public class Event implements Parcelable {
         this.location = location;
     }
 
-    public EventText getEventText() {
-        return eventText;
+    public Text getText() {
+        return text;
     }
 
-    public void setEventText(EventText eventText) {
-        this.eventText = eventText;
+    public void setText(Text text) {
+        this.text = text;
     }
 
     public Company getCompany() {
@@ -119,7 +119,7 @@ public class Event implements Parcelable {
 
     @Override
     public String toString() {
-        return company.getName() + " Event: " + eventText.getHeading();
+        return company.getName() + " Event: " + text.getHeading();
     }
 
     /**
@@ -196,26 +196,26 @@ public class Event implements Parcelable {
     /**
      * Describes a json event text with a heading and body
      */
-    public static class EventText implements Parcelable {
+    public static class Text implements Parcelable {
         private String heading;
         private String body;
 
-        public EventText() {
+        public Text() {
         }
 
-        public EventText(Parcel source) {
+        public Text(Parcel source) {
             Bundle data = source.readBundle();
             heading = data.getString("heading");
             body = data.getString("body");
         }
 
-        public static final Parcelable.Creator<EventText> CREATOR = new Parcelable.Creator<EventText>() {
-            public EventText createFromParcel(Parcel data) {
-                return new EventText(data);
+        public static final Parcelable.Creator<Text> CREATOR = new Parcelable.Creator<Text>() {
+            public Text createFromParcel(Parcel data) {
+                return new Text(data);
             }
 
-            public EventText[] newArray(int size) {
-                return new EventText[size];
+            public Text[] newArray(int size) {
+                return new Text[size];
             }
         };
 

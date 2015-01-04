@@ -1,82 +1,100 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/events_layout"
+<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.sothree.slidinguppanel.SlidingUpPanelLayout xmlns:sothree="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/sliding_layout"
+    <RelativeLayout
+        android:id="@+id/events_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="bottom"
-        sothree:dragView="@+id/dragView"
-        sothree:initialState="hidden"
-        sothree:panelHeight="@dimen/sliding_up_panel_height"
-        sothree:paralaxOffset="100dp"
-        sothree:shadowHeight="4dp">
+        android:layout_height="match_parent">
 
-         <!-- Main Content -->
-        <FrameLayout
+        <com.sothree.slidinguppanel.SlidingUpPanelLayout xmlns:sothree="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/sliding_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical">
-            <android.support.v7.widget.Toolbar
-                xmlns:sothree="http://schemas.android.com/apk/res-auto"
-                xmlns:android="http://schemas.android.com/apk/res/android"
-                android:id="@+id/main_toolbar"
-                android:layout_height="?attr/actionBarSize"
-                android:background="?attr/colorPrimary"
-                sothree:theme="@style/ActionBar"
-                android:layout_width="match_parent"/>
+            android:gravity="bottom"
+            sothree:dragView="@+id/dragView"
+            sothree:initialState="hidden"
+            sothree:panelHeight="@dimen/sliding_up_panel_height"
+            sothree:paralaxOffset="100dp"
+            sothree:shadowHeight="4dp">
+
+            <!-- Main Content -->
             <FrameLayout
-                android:id="@+id/fragment_container"
-                android:layout_marginTop="?attr/actionBarSize"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-        </FrameLayout>
-
-        <!-- Sliding layout -->
-        <LinearLayout
-            android:id="@+id/drag_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/lightest_gray"
-            android:clickable="true"
-            android:focusable="false"
-            android:orientation="vertical">
-
-            <!-- Bottom panel -->
-            <LinearLayout
-                android:id="@+id/event_detail_panel"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/sliding_up_panel_height"
-                android:orientation="horizontal"
-                android:paddingLeft="@dimen/activity_horizontal_margin">
-
-                <ImageView
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="0.2"
-                    android:src="@drawable/placeholder" />
-
-                <TextView
-                    android:id="@+id/view_event_detail_title"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="0.8"
-                    android:gravity="center_vertical"
-                    android:paddingLeft="@dimen/activity_horizontal_margin"
-                    android:text="@string/open_detail_view"
-                    android:textSize="14sp" />
-
-            </LinearLayout>
-
-            <!-- Detail content -->
-            <LinearLayout
-                android:id="@+id/view_event_fragment"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical" />
-        </LinearLayout>
-    </com.sothree.slidinguppanel.SlidingUpPanelLayout>
+                android:orientation="vertical">
 
-</RelativeLayout>
+                <android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
+                    xmlns:sothree="http://schemas.android.com/apk/res-auto"
+                    android:id="@+id/main_toolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="?attr/actionBarSize"
+                    android:background="?attr/colorPrimary"
+                    sothree:theme="@style/ActionBar" />
+
+                <FrameLayout
+                    android:id="@+id/fragment_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="?attr/actionBarSize" />
+            </FrameLayout>
+
+            <!-- Sliding layout -->
+            <LinearLayout
+                android:id="@+id/drag_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/lightest_gray"
+                android:clickable="true"
+                android:focusable="false"
+                android:orientation="vertical">
+
+                <!-- Bottom panel -->
+                <LinearLayout
+                    android:id="@+id/event_detail_panel"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/sliding_up_panel_height"
+                    android:orientation="horizontal"
+                    android:paddingLeft="@dimen/activity_horizontal_margin">
+
+                    <ImageView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.2"
+                        android:src="@drawable/placeholder" />
+
+                    <TextView
+                        android:id="@+id/view_event_detail_title"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.8"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="@dimen/activity_horizontal_margin"
+                        android:text="@string/open_detail_view"
+                        android:textSize="14sp" />
+
+                </LinearLayout>
+
+                <!-- Detail content -->
+                <LinearLayout
+                    android:id="@+id/view_event_fragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical" />
+            </LinearLayout>
+        </com.sothree.slidinguppanel.SlidingUpPanelLayout>
+
+    </RelativeLayout>
+
+    <!-- The navigation drawer -->
+    <ListView
+        android:id="@+id/left_drawer"
+        android:layout_width="240dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:background="@color/lightest_gray"
+        android:choiceMode="multipleChoice"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="0dp" />
+</android.support.v4.widget.DrawerLayout>

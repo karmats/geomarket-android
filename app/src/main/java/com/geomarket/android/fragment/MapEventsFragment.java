@@ -85,7 +85,6 @@ public class MapEventsFragment extends MapFragment {
                 map.moveCamera(cameraUpdate);
             }
             for (Event e : mEvents) {
-                LogHelper.logInfo("Location from event: " + e.getLocation());
                 if (e.getLocation() != null) {
                     Marker m = map.addMarker(new MarkerOptions().position(e.getLocation().toLatLng()));
                     mMarkerIdEventMap.put(m.getId(), e);
