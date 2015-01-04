@@ -64,15 +64,36 @@
                         android:layout_weight="0.2"
                         android:src="@drawable/placeholder" />
 
-                    <TextView
-                        android:id="@+id/view_event_detail_title"
+                    <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="0.8"
-                        android:gravity="center_vertical"
                         android:paddingLeft="@dimen/activity_horizontal_margin"
-                        android:text="@string/open_detail_view"
-                        android:textSize="14sp" />
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/view_event_detail_title"
+                            style="@style/OverflowText"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:textSize="@dimen/text_size_large"
+                            android:textStyle="bold" />
+                        <TextView
+                            android:id="@+id/view_event_company_name"
+                            style="@style/OverflowText"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:textSize="@dimen/text_size_small" />
+                        <TextView
+                            android:id="@+id/view_event_distance"
+                            style="@style/OverflowText"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:textSize="@dimen/text_size_small" />
+                    </LinearLayout>
 
                 </LinearLayout>
 

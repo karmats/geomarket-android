@@ -28,6 +28,7 @@ import com.geomarket.android.fragment.ViewListEventsFragment;
 import com.geomarket.android.util.LogHelper;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
 
 import butterknife.ButterKnife;
@@ -49,10 +50,16 @@ public class ViewEventsActivity extends ActionBarActivity implements ViewListEve
     Toolbar mToolbar;
     @InjectView(R.id.view_event_detail_title)
     TextView mEventTitleTextView;
+    @InjectView(R.id.view_event_company_name)
+    TextView mEventCompanyName;
+    @InjectView(R.id.view_event_distance)
+    TextView mEventDistance;
     @InjectView(R.id.drawer_layout)
     DrawerLayout mDrawerLayout;
     @InjectView(R.id.left_drawer)
     ListView mDrawerList;
+
+    private Location mLatestLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,11 +90,11 @@ public class ViewEventsActivity extends ActionBarActivity implements ViewListEve
 
         // User location
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        Location latestLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+        mLatestLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 
         // Show the view map fragment
         getFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                ViewEventsFragment.newInstance(events, categories, new Event.Location(latestLocation.getLatitude(), latestLocation.getLongitude()))).
+                ViewEventsFragment.newInstance(events, categories, new Event.Location(mLatestLocation.getLatitude(), mLatestLocation.getLongitude()))).
                 setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE).addToBackStack(null).commit();
     }
 
@@ -130,7 +137,7 @@ public class ViewEventsActivity extends ActionBarActivity implements ViewListEve
     // Clicking an event in list view
     @Override
     public void onListEventClick(Event event) {
-        mEventTitleTextView.setText(event.getCompany().getName() + " " + event.getText().getHeading());
+        setupEvent(event);
         getFragmentManager().beginTransaction().replace(
                 R.id.view_event_fragment, ViewEventDetailsFragment.newInstance(event)).commit();
         mDetailsPanelLayout.expandPanel();
@@ -139,7 +146,7 @@ public class ViewEventsActivity extends ActionBarActivity implements ViewListEve
     // Clicking an event in map view
     @Override
     public void onMapEventClick(Event event) {
-        mEventTitleTextView.setText(event.getCompany().getName() + " " + event.getText().getHeading());
+        setupEvent(event);
         getFragmentManager().beginTransaction().replace(
                 R.id.view_event_fragment, ViewEventDetailsFragment.newInstance(event)).commit();
         mDetailsPanelLayout.showPanel();
@@ -151,4 +158,15 @@ public class ViewEventsActivity extends ActionBarActivity implements ViewListEve
         mDetailsPanelLayout.hidePanel();
     }
 
+    private void setupEvent(Event event) {
+        mEventTitleTextView.setText(event.getText().getHeading());
+        mEventCompanyName.setText(event.getCompany().getName());
+        Location companyLoc = new Location("me");
+        companyLoc.setLatitude(event.getLocation().getLatitude());
+        companyLoc.setLongitude(event.getLocation().getLongitude());
+        NumberFormat nf = NumberFormat.getNumberInstance();
+        nf.setMaximumFractionDigits(2);
+        String distanceString = nf.format(mLatestLocation.distanceTo(companyLoc) / 1000);
+        mEventDistance.setText(distanceString + " km");
+    }
 }

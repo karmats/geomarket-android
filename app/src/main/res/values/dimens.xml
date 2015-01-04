@@ -6,4 +6,9 @@
 
     <dimen name="round_button_diameter">56dp</dimen>
     <dimen name="elevation_high">9dp</dimen>
+
+    <!-- Text sizes -->
+    <dimen name="text_size_small">12sp</dimen>
+    <dimen name="text_size_normal">16sp</dimen>
+    <dimen name="text_size_large">20sp</dimen>
 </resources>
