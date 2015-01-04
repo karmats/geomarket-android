@@ -110,7 +110,7 @@ public class MapEventsFragment extends MapFragment {
             }
             for (Event e : mEvents) {
                 if (e.getLocation() != null) {
-                    float hue = mMarkerCategoryColors.containsKey(e.getCategory()) ? mMarkerCategoryColors.get(e.getCategory()) : BitmapDescriptorFactory.HUE_CYAN;
+                    float hue = mMarkerCategoryColors.containsKey(e.getCategory()) ? mMarkerCategoryColors.get(e.getCategory()) : BitmapDescriptorFactory.HUE_RED;
                     Marker m = map.addMarker(new MarkerOptions().position(e.getLocation().toLatLng())
                             .icon(BitmapDescriptorFactory.defaultMarker(hue)));
                     mMarkerIdEventMap.put(m.getId(), e);

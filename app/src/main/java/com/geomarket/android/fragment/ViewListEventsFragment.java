@@ -8,11 +8,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.TextView;
 
 import com.geomarket.android.R;
+import com.geomarket.android.adapter.ListEventAdapter;
 import com.geomarket.android.api.Event;
 
 import java.util.ArrayList;
@@ -67,8 +67,7 @@ public class ViewListEventsFragment extends Fragment implements AbsListView.OnIt
         super.onCreate(savedInstanceState);
 
         mEvents = getArguments().getParcelableArrayList(EVENTS_ARG);
-        mAdapter = new ArrayAdapter<Event>(getActivity(),
-                android.R.layout.simple_list_item_1, android.R.id.text1, mEvents);
+        mAdapter = new ListEventAdapter(getActivity(), mEvents);
     }
 
     @Override
