@@ -5,19 +5,23 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
 
+import com.geomarket.android.api.Category;
 import com.geomarket.android.api.Event;
 import com.geomarket.android.util.LogHelper;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -27,30 +31,35 @@ import java.util.Map;
  */
 public class MapEventsFragment extends MapFragment {
     private static final String EVENTS_PARAM = "events_param";
+    private static final String CATEGORIES_PARAM = "categories_param";
     private static final String LOCATION_PARAM = "location_param";
 
     private OnMapEventClickListener mListener;
 
     private ArrayList<Event> mEvents;
     private Event.Location mLocation;
+    private ArrayList<Category> mCategories;
     private boolean mFirstTime;
 
     private Map<String, Event> mMarkerIdEventMap = new HashMap<>();
+    private Map<String, Float> mMarkerCategoryColors = new HashMap<>();
 
 
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param events   The events to show on the map.
-     * @param location The initial location.
+     * @param events     The events to show on the map.
+     * @param location   The initial location.
+     * @param categories The app categories
      * @return A new instance of fragment MapEventsFragment.
      */
-    public static MapEventsFragment newInstance(ArrayList<Event> events, Event.Location location) {
+    public static MapEventsFragment newInstance(ArrayList<Event> events, Event.Location location, ArrayList<Category> categories) {
         MapEventsFragment fragment = new MapEventsFragment();
         Bundle args = new Bundle();
         args.putParcelableArrayList(EVENTS_PARAM, events);
         args.putParcelable(LOCATION_PARAM, location);
+        args.putParcelableArrayList(CATEGORIES_PARAM, categories);
         fragment.setArguments(args);
         return fragment;
     }
@@ -66,6 +75,21 @@ public class MapEventsFragment extends MapFragment {
         if (getArguments() != null) {
             mEvents = getArguments().getParcelableArrayList(EVENTS_PARAM);
             mLocation = getArguments().getParcelable(LOCATION_PARAM);
+            mCategories = getArguments().getParcelableArrayList(CATEGORIES_PARAM);
+        }
+        // Setup marker color map
+        // TODO Find better way :)
+        Float[] colors = new Float[]{BitmapDescriptorFactory.HUE_BLUE, BitmapDescriptorFactory.HUE_ORANGE,
+                BitmapDescriptorFactory.HUE_RED, BitmapDescriptorFactory.HUE_YELLOW, BitmapDescriptorFactory.HUE_ROSE};
+        Iterator<Float> colorIterator = Arrays.asList(colors).iterator();
+        Float color = colorIterator.next();
+        for (Category category : mCategories) {
+            if (!mMarkerCategoryColors.containsKey(category.getId())) {
+                mMarkerCategoryColors.put(category.getId(), color);
+                if (colorIterator.hasNext()) {
+                    color = colorIterator.next();
+                }
+            }
         }
     }
 
@@ -86,7 +110,9 @@ public class MapEventsFragment extends MapFragment {
             }
             for (Event e : mEvents) {
                 if (e.getLocation() != null) {
-                    Marker m = map.addMarker(new MarkerOptions().position(e.getLocation().toLatLng()));
+                    float hue = mMarkerCategoryColors.containsKey(e.getCategory()) ? mMarkerCategoryColors.get(e.getCategory()) : BitmapDescriptorFactory.HUE_CYAN;
+                    Marker m = map.addMarker(new MarkerOptions().position(e.getLocation().toLatLng())
+                            .icon(BitmapDescriptorFactory.defaultMarker(hue)));
                     mMarkerIdEventMap.put(m.getId(), e);
                 }
             }

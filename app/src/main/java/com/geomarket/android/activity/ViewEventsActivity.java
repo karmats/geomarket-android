@@ -87,7 +87,7 @@ public class ViewEventsActivity extends ActionBarActivity implements ViewListEve
 
         // Show the view map fragment
         getFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                ViewEventsFragment.newInstance(events, new Event.Location(latestLocation.getLatitude(), latestLocation.getLongitude()))).
+                ViewEventsFragment.newInstance(events, categories, new Event.Location(latestLocation.getLatitude(), latestLocation.getLongitude()))).
                 setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE).addToBackStack(null).commit();
     }
 

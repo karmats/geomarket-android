@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 
 import com.geomarket.android.R;
+import com.geomarket.android.api.Category;
 import com.geomarket.android.api.Event;
 import com.geomarket.android.util.LogHelper;
 import com.google.android.gms.maps.MapFragment;
@@ -21,10 +22,12 @@ import butterknife.InjectView;
 import butterknife.OnClick;
 
 public class ViewEventsFragment extends Fragment {
-    private static String EVENTS_PARAM = "events_param";
-    private static String LOCATION_PARAM = "location_param";
+    private static final String EVENTS_PARAM = "events_param";
+    private static final String CATEGORIES_PARAM = "categories_param";
+    private static final String LOCATION_PARAM = "location_param";
 
     private ArrayList<Event> mEvents;
+    private ArrayList<Category> mCategories;
     private Event.Location mLocation;
 
     private MapFragment mMapFragment;
@@ -38,12 +41,13 @@ public class ViewEventsFragment extends Fragment {
     ImageButton mToggleMapListBtn;
 
 
-    public static ViewEventsFragment newInstance(ArrayList<Event> events, Event.Location location) {
+    public static ViewEventsFragment newInstance(ArrayList<Event> events, ArrayList<Category> categories, Event.Location location) {
         LogHelper.logInfo("Events is " + events + " Location is " + location);
         ViewEventsFragment fragment = new ViewEventsFragment();
         Bundle args = new Bundle();
         args.putParcelableArrayList(EVENTS_PARAM, events);
         args.putParcelable(LOCATION_PARAM, location);
+        args.putParcelableArrayList(CATEGORIES_PARAM, categories);
         fragment.setArguments(args);
         return fragment;
     }
@@ -55,6 +59,7 @@ public class ViewEventsFragment extends Fragment {
         // Get events and location from arguments
         mEvents = getArguments().getParcelableArrayList(EVENTS_PARAM);
         mLocation = getArguments().getParcelable(LOCATION_PARAM);
+        mCategories = getArguments().getParcelableArrayList(CATEGORIES_PARAM);
     }
 
     @Override
@@ -63,7 +68,7 @@ public class ViewEventsFragment extends Fragment {
         ButterKnife.inject(this, v);
 
         // Set up the map
-        mMapFragment = MapEventsFragment.newInstance(mEvents, mLocation);
+        mMapFragment = MapEventsFragment.newInstance(mEvents, mLocation, mCategories);
 
         // Set up the list fragment
         mListEventsFragment = ViewListEventsFragment.newInstance(mEvents);
