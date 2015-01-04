@@ -3,6 +3,7 @@ package com.geomarket.android.activity;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -10,21 +11,25 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.geomarket.android.R;
 import com.geomarket.android.api.Category;
 import com.geomarket.android.api.Event;
+import com.geomarket.android.api.service.GeoMarketServiceApiBuilder;
 import com.geomarket.android.fragment.MapEventsFragment;
 import com.geomarket.android.fragment.ViewEventDetailsFragment;
 import com.geomarket.android.fragment.ViewEventsFragment;
 import com.geomarket.android.fragment.ViewListEventsFragment;
+import com.geomarket.android.task.DownloadImageTask;
 import com.geomarket.android.util.LogHelper;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
@@ -58,7 +63,10 @@ public class ViewEventsActivity extends ActionBarActivity implements ViewListEve
     DrawerLayout mDrawerLayout;
     @InjectView(R.id.left_drawer)
     ListView mDrawerList;
+    @InjectView(R.id.view_event_detail_thumb)
+    ImageView mEventThumb;
 
+    private ActionBarDrawerToggle mDrawerToggle;
     private Location mLatestLocation;
 
     @Override
@@ -70,7 +78,7 @@ public class ViewEventsActivity extends ActionBarActivity implements ViewListEve
         ButterKnife.inject(this);
 
         setSupportActionBar(mToolbar);
-        ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, R.string.app_name, R.string.app_name);
+        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, R.string.app_name, R.string.app_name);
         mDrawerLayout.setDrawerListener(mDrawerToggle);
 
         // Get the events from extra
@@ -111,6 +119,9 @@ public class ViewEventsActivity extends ActionBarActivity implements ViewListEve
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
+        if (mDrawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
         int id = item.getItemId();
         if (id == R.id.action_login) {
             startActivity(new Intent(ViewEventsActivity.this, LoginActivity.class));
@@ -120,9 +131,24 @@ public class ViewEventsActivity extends ActionBarActivity implements ViewListEve
     }
 
     @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        mDrawerToggle.syncState();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        mDrawerToggle.onConfigurationChanged(newConfig);
+    }
+
+    @Override
     public void onBackPressed() {
         if (mDetailsPanelLayout.isPanelExpanded()) {
             mDetailsPanelLayout.collapsePanel();
+        } else if (mDrawerLayout.isDrawerOpen(Gravity.START | Gravity.LEFT)) {
+            mDrawerLayout.closeDrawers();
+            return;
         } else {
             super.onBackPressed();
         }
@@ -159,6 +185,7 @@ public class ViewEventsActivity extends ActionBarActivity implements ViewListEve
     }
 
     private void setupEvent(Event event) {
+        new DownloadImageTask(this, GeoMarketServiceApiBuilder.HOST + event.getImageSmallUrl(), mEventThumb).execute();
         mEventTitleTextView.setText(event.getText().getHeading());
         mEventCompanyName.setText(event.getCompany().getName());
         Location companyLoc = new Location("me");

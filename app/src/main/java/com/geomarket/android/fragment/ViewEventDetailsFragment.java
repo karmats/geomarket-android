@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 import com.geomarket.android.R;
 import com.geomarket.android.api.Event;
-import com.geomarket.android.task.ImageLoadTask;
+import com.geomarket.android.task.DownloadImageTask;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -76,7 +76,7 @@ public class ViewEventDetailsFragment extends Fragment {
         String locationString = mEvent.getLocation().getLatitude() + "," + mEvent.getLocation().getLongitude();
         // Map img
         String url = "http://maps.google.com/maps/api/staticmap?center=" + locationString + "&zoom=18&size=1200x400&sensor=false&markers=" + locationString + "&scale=2";
-        new ImageLoadTask(url, mEventMapImg).execute();
+        new DownloadImageTask(getActivity(), url, mEventMapImg).execute();
         return view;
     }
 

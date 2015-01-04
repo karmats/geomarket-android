@@ -6,6 +6,7 @@
 
     <dimen name="round_button_diameter">56dp</dimen>
     <dimen name="elevation_high">9dp</dimen>
+    <dimen name="navigation_drawer_width">240dp</dimen>
 
     <!-- Text sizes -->
     <dimen name="text_size_small">12sp</dimen>

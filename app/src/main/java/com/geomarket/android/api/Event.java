@@ -18,6 +18,8 @@ public class Event implements Parcelable {
     private Location location;
     private Text text;
     private Company company;
+    private String imageLargeUrl;
+    private String imageSmallUrl;
 
     public Event() {
     }
@@ -31,6 +33,8 @@ public class Event implements Parcelable {
         location = data.getParcelable("location");
         text = data.getParcelable("text");
         company = data.getParcelable("company");
+        imageLargeUrl = data.getString("imageLargeUrl");
+        imageSmallUrl = data.getString("imageSmallUrl");
     }
 
     public static final Parcelable.Creator<Event> CREATOR = new Parcelable.Creator<Event>() {
@@ -53,6 +57,8 @@ public class Event implements Parcelable {
         data.putParcelable("location", location);
         data.putParcelable("text", text);
         data.putParcelable("company", company);
+        data.putString("imageLargeUrl", imageLargeUrl);
+        data.putString("imageSmallUrl", imageSmallUrl);
         dest.writeBundle(data);
     }
 
@@ -116,6 +122,23 @@ public class Event implements Parcelable {
     public void setCompany(Company company) {
         this.company = company;
     }
+
+    public String getImageLargeUrl() {
+        return imageLargeUrl;
+    }
+
+    public void setImageLargeUrl(String imageLargeUrl) {
+        this.imageLargeUrl = imageLargeUrl;
+    }
+
+    public String getImageSmallUrl() {
+        return imageSmallUrl;
+    }
+
+    public void setImageSmallUrl(String imageSmallUrl) {
+        this.imageSmallUrl = imageSmallUrl;
+    }
+
 
     @Override
     public String toString() {
