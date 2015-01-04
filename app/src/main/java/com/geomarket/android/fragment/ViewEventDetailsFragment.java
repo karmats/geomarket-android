@@ -5,10 +5,12 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.geomarket.android.R;
 import com.geomarket.android.api.Event;
+import com.geomarket.android.task.ImageLoadTask;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -32,6 +34,8 @@ public class ViewEventDetailsFragment extends Fragment {
     TextView mEventPhone;
     @InjectView(R.id.view_event_detail_web_site)
     TextView mEventWebSite;
+    @InjectView(R.id.view_event_detail_map_img)
+    ImageView mEventMapImg;
 
     /**
      * Use this factory method to create a new instance of
@@ -69,6 +73,10 @@ public class ViewEventDetailsFragment extends Fragment {
         mEventLocation.setText(mEvent.getCompany().getStreet() + mEvent.getCompany().getStreetNr());
         mEventPhone.setText(String.valueOf(mEvent.getCompany().getPostalCode()));
         mEventWebSite.setText(mEvent.getCompany().getName() + ".com");
+        String locationString = mEvent.getLocation().getLatitude() + "," + mEvent.getLocation().getLongitude();
+        // Map img
+        String url = "http://maps.google.com/maps/api/staticmap?center=" + locationString + "&zoom=18&size=1200x400&sensor=false&markers=" + locationString + "&scale=2";
+        new ImageLoadTask(url, mEventMapImg).execute();
         return view;
     }
 

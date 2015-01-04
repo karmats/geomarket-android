@@ -11,6 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/details"
+        android:textSize="@dimen/text_size_large"
         android:textStyle="bold" />
 
     <TextView
@@ -18,13 +19,15 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@color/white"
-        android:text="@string/details_text_tmp" />
+        android:text="@string/details_text_tmp"
+        android:textSize="@dimen/text_size_normal" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/activity_vertical_margin"
         android:text="@string/detail_location_and_contact"
+        android:textSize="@dimen/text_size_large"
         android:textStyle="bold" />
 
     <LinearLayout
@@ -47,7 +50,9 @@
                 android:id="@+id/view_event_detail_location"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/details_location_tmp" />
+                android:paddingTop="5dp"
+                android:text="@string/details_location_tmp"
+                android:textSize="@dimen/text_size_normal" />
         </LinearLayout>
 
         <LinearLayout
@@ -65,7 +70,9 @@
                 android:id="@+id/view_event_detail_phone"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/details_contact_tmp" />
+                android:paddingTop="5dp"
+                android:text="@string/details_contact_tmp"
+                android:textSize="@dimen/text_size_normal" />
         </LinearLayout>
 
         <LinearLayout
@@ -83,8 +90,17 @@
                 android:id="@+id/view_event_detail_web_site"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/details_website_tmp" />
+                android:paddingTop="5dp"
+                android:text="@string/details_website_tmp"
+                android:textSize="@dimen/text_size_normal" />
         </LinearLayout>
     </LinearLayout>
+
+    <ImageView
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:id="@+id/view_event_detail_map_img"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:src="@drawable/placeholder" />
 
 </LinearLayout>
