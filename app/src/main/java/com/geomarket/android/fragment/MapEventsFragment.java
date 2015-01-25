@@ -50,11 +50,11 @@ public class MapEventsFragment extends MapFragment {
      * this fragment using the provided parameters.
      *
      * @param events     The events to show on the map.
-     * @param location   The initial location.
      * @param categories The app categories
+     * @param location   The initial location.
      * @return A new instance of fragment MapEventsFragment.
      */
-    public static MapEventsFragment newInstance(ArrayList<Event> events, Event.Location location, ArrayList<Category> categories) {
+    public static MapEventsFragment newInstance(ArrayList<Event> events, ArrayList<Category> categories, Event.Location location) {
         MapEventsFragment fragment = new MapEventsFragment();
         Bundle args = new Bundle();
         args.putParcelableArrayList(EVENTS_PARAM, events);

@@ -77,7 +77,8 @@ public class SplashActivity extends Activity {
         new FetchEventsTask(this, new AbstractApiTask.ApiCallback<List<Event>>() {
             @Override
             public void onSuccess(List<Event> result) {
-                mEvents = new ArrayList<>(result);
+                // TODO Groom this list, make some of it as one event
+                mEvents = new ArrayList<>(result.subList(0, result.size() > 100 ? 100 : result.size()));
                 startViewEventsActivity();
             }
 

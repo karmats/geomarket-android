@@ -65,7 +65,7 @@ public class ListEventAdapter extends BaseAdapter {
         new DownloadImageTask(mContext, GeoMarketServiceApiBuilder.HOST + event.getImageSmallUrl(), viewHolder.mThumbImage).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         if (event.getExpires() != null) {
             viewHolder.mDurationText.setText(DateUtils.getRelativeTimeSpanString(event.getExpires(), new Date().getTime(),
-                    0, DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_TIME));
+                    0)); //DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_TIME));
         }
         return convertView;
     }

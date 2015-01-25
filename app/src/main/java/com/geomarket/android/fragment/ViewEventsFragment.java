@@ -68,7 +68,7 @@ public class ViewEventsFragment extends Fragment {
         ButterKnife.inject(this, v);
 
         // Set up the map
-        mMapFragment = MapEventsFragment.newInstance(mEvents, mLocation, mCategories);
+        mMapFragment = MapEventsFragment.newInstance(mEvents, mCategories, mLocation);
 
         // Set up the list fragment
         mListEventsFragment = ViewListEventsFragment.newInstance(mEvents);
