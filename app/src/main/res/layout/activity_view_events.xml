@@ -33,16 +33,17 @@
                     android:background="?attr/colorPrimary"
                     sothree:theme="@style/ActionBar" />
 
+                <com.geomarket.android.view.SlidingTabLayout
+                    android:id="@+id/sliding_tabs"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:theme="@style/PagerTitleStrip"
+                    android:textAlignment="center"/>
+
                 <android.support.v4.view.ViewPager xmlns:android="http://schemas.android.com/apk/res/android"
                     android:id="@+id/pager"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
-
-                    <android.support.v4.view.PagerTitleStrip
-                        style="@style/PagerTitleStrip"
-                        android:layout_width="match_parent"
-                        android:layout_height="?attr/actionBarSize"
-                        android:layout_gravity="top" />
 
                 </android.support.v4.view.ViewPager>
 

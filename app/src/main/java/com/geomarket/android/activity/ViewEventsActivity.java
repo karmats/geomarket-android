@@ -34,6 +34,7 @@ import com.geomarket.android.fragment.ViewEventsFragment;
 import com.geomarket.android.fragment.ViewListEventsFragment;
 import com.geomarket.android.task.DownloadImageTask;
 import com.geomarket.android.util.LogHelper;
+import com.geomarket.android.view.SlidingTabLayout;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.text.NumberFormat;
@@ -58,6 +59,12 @@ public class ViewEventsActivity extends ActionBarActivity implements ViewListEve
      */
     @InjectView(R.id.pager)
     ViewPager mViewPager;
+
+    /**
+     * The {@link SlidingTabLayout} for tab indication.
+     */
+    @InjectView(R.id.sliding_tabs)
+    SlidingTabLayout mSlidingTabLayout;
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
      * fragments for each of the sections.
@@ -103,8 +110,9 @@ public class ViewEventsActivity extends ActionBarActivity implements ViewListEve
         mSectionsPagerAdapter = new SectionsPagerAdapter(getFragmentManager());
 
         // Set up the ViewPager with the sections adapter.
-        mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setAdapter(mSectionsPagerAdapter);
+        mSlidingTabLayout.setSelectedIndicatorColors(getResources().getColor(R.color.light_orange));
+        mSlidingTabLayout.setViewPager(mViewPager);
 
         // Get the events from extra
         mEvents = getIntent().getParcelableArrayListExtra(EVENTS_EXTRA);
