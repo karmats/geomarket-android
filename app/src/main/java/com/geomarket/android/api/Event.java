@@ -12,7 +12,7 @@ import com.google.android.gms.maps.model.LatLng;
 public class Event implements Parcelable {
 
     private String id;
-    private String category;
+    private String categoryId;
     private Long expires;
     private String eventTypeId;
     private Location location;
@@ -27,7 +27,7 @@ public class Event implements Parcelable {
     public Event(Parcel source) {
         Bundle data = source.readBundle(getClass().getClassLoader());
         id = data.getString("id");
-        category = data.getString("category");
+        categoryId = data.getString("categoryId");
         expires = data.getLong("expires");
         eventTypeId = data.getString("eventTypeId");
         location = data.getParcelable("location");
@@ -51,7 +51,7 @@ public class Event implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         Bundle data = new Bundle();
         data.putString("id", id);
-        data.putString("category", category);
+        data.putString("categoryId", categoryId);
         data.putLong("expires", expires);
         data.putString("eventTypeId", eventTypeId);
         data.putParcelable("location", location);
@@ -75,12 +75,12 @@ public class Event implements Parcelable {
         this.id = id;
     }
 
-    public String getCategory() {
-        return category;
+    public String getCategoryId() {
+        return categoryId;
     }
 
-    public void setCategory(String category) {
-        this.category = category;
+    public void setCategoryId(String category) {
+        this.categoryId = category;
     }
 
     public Long getExpires() {
