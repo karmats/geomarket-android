@@ -112,6 +112,7 @@ public class ViewEventsActivity extends ActionBarActivity implements ViewListEve
         // Set up the ViewPager with the sections adapter.
         mViewPager.setAdapter(mSectionsPagerAdapter);
         mSlidingTabLayout.setSelectedIndicatorColors(getResources().getColor(R.color.light_orange));
+        mSlidingTabLayout.setCustomTabView(R.layout.tab_item, R.id.tab_item_text);
         mSlidingTabLayout.setViewPager(mViewPager);
 
         // Get the events from extra
