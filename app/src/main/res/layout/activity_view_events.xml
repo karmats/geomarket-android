@@ -4,129 +4,123 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true">
 
-    <RelativeLayout
-        android:id="@+id/events_layout"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-        <LinearLayout
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/main_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            android:theme="@style/ActionBar" />
+
+        <com.geomarket.android.view.SlidingTabLayout
+            android:id="@+id/sliding_tabs"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:theme="@style/PagerTitleStrip" />
+
+
+        <com.sothree.slidinguppanel.SlidingUpPanelLayout xmlns:sothree="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/sliding_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:gravity="bottom"
+            sothree:initialState="hidden"
+            sothree:panelHeight="@dimen/sliding_up_panel_height"
+            sothree:paralaxOffset="100dp"
+            sothree:shadowHeight="4dp">
 
-            <android.support.v7.widget.Toolbar
-                android:id="@+id/main_toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:background="?attr/colorPrimary"
-                android:theme="@style/ActionBar" />
-
-            <com.geomarket.android.view.SlidingTabLayout
-                android:id="@+id/sliding_tabs"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:theme="@style/PagerTitleStrip" />
-
-
-            <com.sothree.slidinguppanel.SlidingUpPanelLayout xmlns:sothree="http://schemas.android.com/apk/res-auto"
-                android:id="@+id/sliding_layout"
+            <!-- Main Content -->
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:gravity="bottom"
-                sothree:initialState="hidden"
-                sothree:panelHeight="@dimen/sliding_up_panel_height"
-                sothree:paralaxOffset="100dp"
-                sothree:shadowHeight="4dp">
+                android:orientation="vertical">
 
-                <!-- Main Content -->
-                <LinearLayout
+                <android.support.v4.view.ViewPager
+                    android:id="@+id/pager"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical">
+                    android:layout_height="match_parent"></android.support.v4.view.ViewPager>
 
-                    <android.support.v4.view.ViewPager
-                        android:id="@+id/pager"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"></android.support.v4.view.ViewPager>
-
-                    <FrameLayout
-                        android:id="@+id/fragment_container"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="?attr/actionBarSize" />
-                </LinearLayout>
-
-                <!-- Sliding layout -->
-                <LinearLayout
-                    android:id="@+id/drag_view"
+                <FrameLayout
+                    android:id="@+id/fragment_container"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@color/lightest_gray"
-                    android:clickable="true"
-                    android:focusable="false"
-                    android:orientation="vertical">
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="?attr/actionBarSize" />
+            </LinearLayout>
 
-                    <!-- Bottom panel -->
+            <!-- Sliding layout -->
+            <LinearLayout
+                android:id="@+id/drag_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/lightest_gray"
+                android:clickable="true"
+                android:focusable="false"
+                android:orientation="vertical">
+
+                <!-- Bottom panel -->
+                <LinearLayout
+                    android:id="@+id/event_detail_panel"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/sliding_up_panel_height"
+                    android:orientation="horizontal"
+                    android:paddingLeft="@dimen/activity_horizontal_margin">
+
+                    <ImageView
+                        android:id="@+id/view_event_detail_thumb"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.2"
+                        android:src="@drawable/placeholder" />
+
                     <LinearLayout
-                        android:id="@+id/event_detail_panel"
-                        android:layout_width="match_parent"
-                        android:layout_height="@dimen/sliding_up_panel_height"
-                        android:orientation="horizontal"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.8"
+                        android:orientation="vertical"
                         android:paddingLeft="@dimen/activity_horizontal_margin">
 
-                        <ImageView
-                            android:id="@+id/view_event_detail_thumb"
-                            android:layout_width="0dp"
-                            android:layout_height="match_parent"
-                            android:layout_weight="0.2"
-                            android:src="@drawable/placeholder" />
+                        <TextView
+                            android:id="@+id/view_event_detail_title"
+                            style="@style/OverflowText"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:textSize="@dimen/text_size_large"
+                            android:textStyle="bold" />
 
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="match_parent"
-                            android:layout_weight="0.8"
-                            android:orientation="vertical"
-                            android:paddingLeft="@dimen/activity_horizontal_margin">
+                        <TextView
+                            android:id="@+id/view_event_company_name"
+                            style="@style/OverflowText"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:textSize="@dimen/text_size_small" />
 
-                            <TextView
-                                android:id="@+id/view_event_detail_title"
-                                style="@style/OverflowText"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:gravity="center_vertical"
-                                android:textSize="@dimen/text_size_large"
-                                android:textStyle="bold" />
-
-                            <TextView
-                                android:id="@+id/view_event_company_name"
-                                style="@style/OverflowText"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:gravity="center_vertical"
-                                android:textSize="@dimen/text_size_small" />
-
-                            <TextView
-                                android:id="@+id/view_event_distance"
-                                style="@style/OverflowText"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:gravity="center_vertical"
-                                android:textSize="@dimen/text_size_small" />
-                        </LinearLayout>
-
+                        <TextView
+                            android:id="@+id/view_event_distance"
+                            style="@style/OverflowText"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:textSize="@dimen/text_size_small" />
                     </LinearLayout>
 
-                    <!-- Detail content -->
-                    <LinearLayout
-                        android:id="@+id/view_event_fragment"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:orientation="vertical" />
                 </LinearLayout>
-            </com.sothree.slidinguppanel.SlidingUpPanelLayout>
-        </LinearLayout>
 
-    </RelativeLayout>
+                <!-- Detail content -->
+                <LinearLayout
+                    android:id="@+id/view_event_fragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical" />
+            </LinearLayout>
+        </com.sothree.slidinguppanel.SlidingUpPanelLayout>
+    </LinearLayout>
+
 
     <!-- The navigation drawer -->
     <ListView
