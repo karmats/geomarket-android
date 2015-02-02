@@ -6,10 +6,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.geomarket.android.R;
@@ -20,10 +22,14 @@ import com.geomarket.android.task.AbstractApiTask;
 import com.geomarket.android.task.FetchCategoriesTask;
 import com.geomarket.android.task.FetchEventsTask;
 import com.geomarket.android.task.FetchLanguages;
+import com.geomarket.android.util.LogHelper;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+
+import butterknife.ButterKnife;
+import butterknife.InjectView;
 
 public class SplashActivity extends Activity {
     private static final String DEFAULT_LANGUAGE = "SE";
@@ -31,16 +37,23 @@ public class SplashActivity extends Activity {
     private ArrayList<Event> mEvents;
     private ArrayList<Category> mCategories;
 
+    // Views
+    @InjectView(R.id.loading_text)
+    TextView mInitText;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
+        // Inject the views
+        ButterKnife.inject(this);
 
+        mInitText.setText(getString(R.string.init_initializing));
         // Get the language id we use in all api calls
         final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         final String languageId = preferences.getString(Language.PREF_LANGUAGE_ID, "");
         if (!languageId.isEmpty()) {
-            fetchCategoriesAndEvents(languageId);
+            fetchCategoriesAndEvents();
         } else {
             // Fetch available languages
             new FetchLanguages(new AbstractApiTask.ApiCallback<List<Language>>() {
@@ -56,7 +69,7 @@ public class SplashActivity extends Activity {
                     }
                     // Store language id in preferences
                     preferences.edit().putString(Language.PREF_LANGUAGE_ID, languageId).commit();
-                    fetchCategoriesAndEvents(languageId);
+                    fetchCategoriesAndEvents();
                 }
 
                 @Override
@@ -70,25 +83,37 @@ public class SplashActivity extends Activity {
 
     }
 
-    private void fetchCategoriesAndEvents(String langId) {
+    private void fetchCategoriesAndEvents() {
         // Fetch events near user
+        mInitText.setText(getString(R.string.init_fetch_position));
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         Location loc = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-        new FetchEventsTask(this, new AbstractApiTask.ApiCallback<List<Event>>() {
-            @Override
-            public void onSuccess(List<Event> result) {
-                // TODO Groom this list, make some of it as one event
-                mEvents = new ArrayList<>(result.subList(0, result.size() > 100 ? 100 : result.size()));
-                startViewEventsActivity();
-            }
+        if (loc != null) {
+            buildFetchEventsTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, loc);
+        } else {
+            // No last known location found, request for it
+            locationManager.requestSingleUpdate(LocationManager.NETWORK_PROVIDER, new LocationListener() {
+                @Override
+                public void onLocationChanged(Location location) {
+                    buildFetchEventsTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, location);
+                }
 
-            @Override
-            public void onFailure(String error) {
-                Toast.makeText(SplashActivity.this, error, Toast.LENGTH_SHORT).show();
-                mEvents = new ArrayList<>();
-                startViewEventsActivity();
-            }
-        }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, loc);
+                @Override
+                public void onStatusChanged(String provider, int status, Bundle extras) {
+                    LogHelper.logInfo("Got " + status + " from provider " + provider);
+                }
+
+                @Override
+                public void onProviderEnabled(String provider) {
+                    LogHelper.logInfo("Provider " + provider + " enabled");
+                }
+
+                @Override
+                public void onProviderDisabled(String provider) {
+                    LogHelper.logInfo("Provider " + provider + " disabled");
+                }
+            }, null);
+        }
 
         // Fetch the categories
         new FetchCategoriesTask(this, new AbstractApiTask.ApiCallback<List<Category>>() {
@@ -105,6 +130,25 @@ public class SplashActivity extends Activity {
                 startViewEventsActivity();
             }
         }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    private FetchEventsTask buildFetchEventsTask() {
+        mInitText.setText(getString(R.string.init_fetch_events));
+        return new FetchEventsTask(this, new AbstractApiTask.ApiCallback<List<Event>>() {
+            @Override
+            public void onSuccess(List<Event> result) {
+                // TODO Groom this list, make some of it as one event
+                mEvents = new ArrayList<>(result.subList(0, result.size() > 100 ? 100 : result.size()));
+                startViewEventsActivity();
+            }
+
+            @Override
+            public void onFailure(String error) {
+                Toast.makeText(SplashActivity.this, error, Toast.LENGTH_SHORT).show();
+                mEvents = new ArrayList<>();
+                startViewEventsActivity();
+            }
+        });
     }
 
     private void startViewEventsActivity() {

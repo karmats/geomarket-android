@@ -7,7 +7,12 @@
     <string name="title_fragment_view_map_events">Map</string>
     <string name="title_fragment_view_list_events">List</string>
 
-    <!-- Temp -->
+    <!-- Init texts -->
+    <string name="init_initializing">Initializing...</string>
+    <string name="init_fetch_position">Getting position</string>
+    <string name="init_fetch_events">Getting events near you</string>
+
+    <!-- Details -->
     <string name="details">Details</string>
     <string name="detail_location_and_contact">Location &amp; Contact</string>
     <string name="detail_view">Detail View</string>
