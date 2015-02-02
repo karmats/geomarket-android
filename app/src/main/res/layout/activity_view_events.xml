@@ -16,10 +16,39 @@
             android:background="?attr/colorPrimary"
             android:theme="@style/ActionBar" />
 
+        <LinearLayout
+            android:id="@+id/details_btn_view"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/dark_orange"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+            <Button
+                android:id="@+id/details_prev_btn"
+                style="@style/NavButton"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.5"
+                android:text="@string/details_previous" />
+
+            <View
+                style="@style/Divider"
+                android:layout_height="28dp" />
+
+            <Button
+                android:id="@+id/details_next_btn"
+                style="@style/NavButton"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.5"
+                android:text="@string/details_next" />
+        </LinearLayout>
+
         <com.geomarket.android.view.SlidingTabLayout
             android:id="@+id/sliding_tabs"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="?attr/actionBarSize"
             android:theme="@style/PagerTitleStrip" />
 
 

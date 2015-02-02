@@ -20,7 +20,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -42,6 +44,7 @@ import java.util.ArrayList;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import butterknife.OnClick;
 
 public class ViewEventsActivity extends ActionBarActivity implements ViewListEventsFragment.OnListEventClickListener, MapEventsFragment.OnMapEventClickListener, ViewEventsFragment.OnLayoutChangeListener {
 
@@ -86,9 +89,16 @@ public class ViewEventsActivity extends ActionBarActivity implements ViewListEve
     ListView mDrawerList;
     @InjectView(R.id.view_event_detail_thumb)
     ImageView mEventThumb;
+    @InjectView(R.id.details_btn_view)
+    LinearLayout mButtonView;
+    @InjectView(R.id.details_next_btn)
+    Button mNextButton;
+    @InjectView(R.id.details_prev_btn)
+    Button mPreviousButton;
 
     private ArrayList<Event> mEvents;
     private ArrayList<Category> mCategories;
+    private Event mCurrentEvent;
 
     private ActionBarDrawerToggle mDrawerToggle;
     private Location mLatestLocation;
@@ -130,11 +140,48 @@ public class ViewEventsActivity extends ActionBarActivity implements ViewListEve
             }
         });
 
+        mDetailsPanelLayout.setPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
+            @Override
+            public void onPanelSlide(View view, float v) {
+            }
+
+            @Override
+            public void onPanelCollapsed(View view) {
+                mButtonView.setVisibility(View.GONE);
+                mSlidingTabLayout.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onPanelExpanded(View view) {
+                mButtonView.setVisibility(View.VISIBLE);
+                mSlidingTabLayout.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onPanelAnchored(View view) {
+            }
+
+            @Override
+            public void onPanelHidden(View view) {
+            }
+        });
+
         // User location
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         mLatestLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
     }
 
+    @OnClick(R.id.details_next_btn)
+    public void onNextButtonClicked() {
+        int idx = mEvents.indexOf(mCurrentEvent);
+        viewEvent(mEvents.get((idx + 1) >= mEvents.size() ? 0 : idx + 1));
+    }
+
+    @OnClick(R.id.details_prev_btn)
+    public void onPreviousButtonClicked() {
+        int idx = mEvents.indexOf(mCurrentEvent);
+        viewEvent(mEvents.get((idx - 1) <= 0 ? mEvents.size() - 1 : idx - 1));
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -192,18 +239,14 @@ public class ViewEventsActivity extends ActionBarActivity implements ViewListEve
     // Clicking an event in list view
     @Override
     public void onListEventClick(Event event) {
-        setupEvent(event);
-        getFragmentManager().beginTransaction().replace(
-                R.id.view_event_fragment, ViewEventDetailsFragment.newInstance(event)).commit();
+        viewEvent(event);
         mDetailsPanelLayout.expandPanel();
     }
 
     // Clicking an event in map view
     @Override
     public void onMapEventClick(Event event) {
-        setupEvent(event);
-        getFragmentManager().beginTransaction().replace(
-                R.id.view_event_fragment, ViewEventDetailsFragment.newInstance(event)).commit();
+        viewEvent(event);
         mDetailsPanelLayout.showPanel();
     }
 
@@ -213,7 +256,8 @@ public class ViewEventsActivity extends ActionBarActivity implements ViewListEve
         mDetailsPanelLayout.hidePanel();
     }
 
-    private void setupEvent(Event event) {
+    private void viewEvent(Event event) {
+        mCurrentEvent = event;
         new DownloadImageTask(this, GeoMarketServiceApiBuilder.HOST + event.getImageSmallUrl(), mEventThumb).execute();
         mEventTitleTextView.setText(event.getText().getHeading());
         mEventCompanyName.setText(event.getCompany().getName());
@@ -221,9 +265,11 @@ public class ViewEventsActivity extends ActionBarActivity implements ViewListEve
         companyLoc.setLatitude(event.getLocation().getLatitude());
         companyLoc.setLongitude(event.getLocation().getLongitude());
         NumberFormat nf = NumberFormat.getNumberInstance();
-        nf.setMaximumFractionDigits(2);
+        nf.setMaximumFractionDigits(1);
         String distanceString = nf.format(mLatestLocation.distanceTo(companyLoc) / 1000);
         mEventDistance.setText(distanceString + " km");
+        getFragmentManager().beginTransaction().replace(
+                R.id.view_event_fragment, ViewEventDetailsFragment.newInstance(event)).commit();
     }
 
     /**

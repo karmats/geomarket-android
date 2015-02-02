@@ -6,6 +6,7 @@
     <string name="title_activity_login">Sign in</string>
     <string name="title_fragment_view_map_events">Map</string>
     <string name="title_fragment_view_list_events">List</string>
+
     <!-- Temp -->
     <string name="details">Details</string>
     <string name="detail_location_and_contact">Location &amp; Contact</string>
@@ -15,6 +16,8 @@
     <string name="details_location_tmp">Såggatan 50A, 41467, Göteborg</string>
     <string name="details_contact_tmp">+46730-221122</string>
     <string name="details_website_tmp">www.awesome.com</string>
+    <string name="details_previous">Previous</string>
+    <string name="details_next">Next</string>
 
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
@@ -31,6 +34,5 @@
     <string name="action_settings">Settings</string>
     <string name="action_login">Log in</string>
     <string name="pick_account">You must allow the app to sign in to your google+ account</string>
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>
