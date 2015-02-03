@@ -3,13 +3,38 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="bottom"
-    android:background="@drawable/splash_bg">
-    <TextView
-        android:id="@+id/loading_text"
-        android:text="@string/hello_world"
-        android:textColor="@color/white"
-        android:textSize="@dimen/text_size_normal"
+    android:background="@color/white">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.5"
+            android:background="@drawable/splash_bg" />
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.5">
+
+            <TextView
+                android:id="@+id/loading_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="@string/hello_world"
+                android:textColor="@color/dark_blue"
+                android:textSize="@dimen/text_size_normal" />
+        </FrameLayout>
+    </LinearLayout>
+
+    <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center" />
-    </FrameLayout>
+        android:layout_gravity="center"
+        android:src="@drawable/logo_splash" />
+</FrameLayout>
