@@ -48,15 +48,16 @@
                 <ImageView
                     android:id="@+id/event_detail_location_ic"
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center_vertical"
-                    android:src="@drawable/ic_action_place" />
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left"
+                    android:src="@drawable/ic_icon_pin" />
 
                 <TextView
                     android:id="@+id/view_event_detail_location"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center_vertical"
+                    android:autoLink="map"
                     android:text="@string/details_location_tmp"
                     android:textSize="@dimen/text_size_normal" />
             </LinearLayout>
@@ -69,15 +70,16 @@
                 <ImageView
                     android:id="@+id/event_detail_contact_ic"
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center_vertical"
-                    android:src="@drawable/ic_action_phone" />
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left"
+                    android:src="@drawable/ic_icon_phone" />
 
                 <TextView
                     android:id="@+id/view_event_detail_phone"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center_vertical"
+                    android:autoLink="phone"
                     android:text="@string/details_contact_tmp"
                     android:textSize="@dimen/text_size_normal" />
             </LinearLayout>
@@ -90,15 +92,16 @@
                 <ImageView
                     android:id="@+id/event_detail_website_ic"
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center_vertical"
-                    android:src="@drawable/ic_action_web_site" />
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left"
+                    android:src="@drawable/ic_icon_globe" />
 
                 <TextView
                     android:id="@+id/view_event_detail_web_site"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center_vertical"
+                    android:autoLink="web"
                     android:text="@string/details_website_tmp"
                     android:textSize="@dimen/text_size_normal" />
             </LinearLayout>
