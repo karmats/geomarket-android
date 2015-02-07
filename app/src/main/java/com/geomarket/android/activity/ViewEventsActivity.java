@@ -35,10 +35,10 @@ import com.geomarket.android.fragment.MapEventsFragment;
 import com.geomarket.android.fragment.ViewEventDetailsFragment;
 import com.geomarket.android.fragment.ViewEventsFragment;
 import com.geomarket.android.fragment.ViewListEventsFragment;
-import com.geomarket.android.task.DownloadImageTask;
 import com.geomarket.android.util.LogHelper;
 import com.geomarket.android.view.SlidingTabLayout;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
+import com.squareup.picasso.Picasso;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -259,7 +259,7 @@ public class ViewEventsActivity extends ActionBarActivity implements ViewListEve
 
     private void viewEvent(Event event) {
         mCurrentEvent = event;
-        new DownloadImageTask(this, GeoMarketServiceApiBuilder.HOST + event.getImageSmallUrl(), mEventThumb).execute();
+        Picasso.with(this).load(GeoMarketServiceApiBuilder.HOST + event.getImageSmallUrl()).into(mEventThumb);
         mEventTitleTextView.setText(event.getText().getHeading());
         mEventCompanyName.setText(event.getCompany().getName());
         Location companyLoc = new Location("me");

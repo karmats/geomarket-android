@@ -1,7 +1,6 @@
 package com.geomarket.android.adapter;
 
 import android.content.Context;
-import android.os.AsyncTask;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,7 +12,7 @@ import android.widget.TextView;
 import com.geomarket.android.R;
 import com.geomarket.android.api.Event;
 import com.geomarket.android.api.service.GeoMarketServiceApiBuilder;
-import com.geomarket.android.task.DownloadImageTask;
+import com.squareup.picasso.Picasso;
 
 import java.util.Date;
 import java.util.List;
@@ -62,7 +61,7 @@ public class ListEventAdapter extends BaseAdapter {
         }
         Event event = mEvents.get(position);
         viewHolder.mTypeText.setText(event.getText().getHeading());
-        new DownloadImageTask(mContext, GeoMarketServiceApiBuilder.HOST + event.getImageSmallUrl(), viewHolder.mThumbImage).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        Picasso.with(mContext).load(GeoMarketServiceApiBuilder.HOST + event.getImageSmallUrl()).into(viewHolder.mThumbImage);
         if (event.getExpires() != null) {
             viewHolder.mDurationText.setText(DateUtils.getRelativeTimeSpanString(event.getExpires(), new Date().getTime(),
                     0)); //DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_TIME));

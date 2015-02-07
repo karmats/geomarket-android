@@ -3,20 +3,26 @@ package com.geomarket.android.fragment;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import com.geomarket.android.api.Category;
 import com.geomarket.android.api.Event;
+import com.geomarket.android.api.service.GeoMarketServiceApiBuilder;
 import com.geomarket.android.util.LogHelper;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,10 +35,13 @@ import java.util.Map;
  * Use the {@link MapEventsFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class MapEventsFragment extends MapFragment {
+public class MapEventsFragment extends MapFragment implements GoogleMap.OnCameraChangeListener {
     private static final String EVENTS_PARAM = "events_param";
     private static final String CATEGORIES_PARAM = "categories_param";
     private static final String LOCATION_PARAM = "location_param";
+
+    // The breakpoint for when the marker icons are changed to company icons
+    private static final float ZOOM_LEVEL_COMPANY_ICONS = 15.0f;
 
     private OnMapEventClickListener mListener;
 
@@ -40,8 +49,10 @@ public class MapEventsFragment extends MapFragment {
     private Event.Location mLocation;
     private ArrayList<Category> mCategories;
     private boolean mFirstTime;
+    private boolean mCompanyIcons;
 
     private Map<String, Event> mMarkerIdEventMap = new HashMap<>();
+    private Map<String, Marker> mMarkersMap = new HashMap<>();
     private Map<String, Float> mMarkerCategoryColors = new HashMap<>();
 
 
@@ -99,6 +110,7 @@ public class MapEventsFragment extends MapFragment {
         final GoogleMap map = getMap();
         if (map != null) {
             map.setMyLocationEnabled(true);
+            map.setOnCameraChangeListener(this);
             map.getUiSettings().setZoomControlsEnabled(false);
             CameraUpdate cameraUpdate = CameraUpdateFactory.newCameraPosition(CameraPosition.builder().target(new LatLng(mLocation.getLatitude(),
                     mLocation.getLongitude())).zoom(12.0f).build());
@@ -108,13 +120,14 @@ public class MapEventsFragment extends MapFragment {
             } else {
                 map.moveCamera(cameraUpdate);
             }
-            for (Event e : mEvents) {
+            for (final Event e : mEvents) {
                 if (e.getLocation() != null) {
-                    float hue = mMarkerCategoryColors.containsKey(e.getCategoryId()) ? mMarkerCategoryColors.get(e.getCategoryId()) : BitmapDescriptorFactory.HUE_RED;
-                    Marker m = map.addMarker(new MarkerOptions().position(e.getLocation().toLatLng())
-                            .icon(BitmapDescriptorFactory.defaultMarker(hue)));
+                    Marker m = getMap().addMarker(new MarkerOptions().position(e.getLocation().toLatLng()));
+                    setMarkerIcon(m, e);
                     mMarkerIdEventMap.put(m.getId(), e);
+                    mMarkersMap.put(m.getId(), m);
                 }
+
             }
             map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
                 @Override
@@ -153,6 +166,51 @@ public class MapEventsFragment extends MapFragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public void onCameraChange(CameraPosition cameraPosition) {
+        boolean updateIcons = false;
+        if (cameraPosition.zoom >= ZOOM_LEVEL_COMPANY_ICONS && !mCompanyIcons) {
+            LogHelper.logInfo("Zoom level reached breakpoint, replacing with company icons");
+            mCompanyIcons = true;
+            updateIcons = true;
+        } else if (cameraPosition.zoom < ZOOM_LEVEL_COMPANY_ICONS && mCompanyIcons) {
+            LogHelper.logInfo("Zoom level reached break point, replacing with default icons");
+            mCompanyIcons = false;
+            updateIcons = true;
+        }
+        if (updateIcons) {
+            for (String markerId : mMarkerIdEventMap.keySet()) {
+                setMarkerIcon(mMarkersMap.get(markerId), mMarkerIdEventMap.get(markerId));
+            }
+        }
+    }
+
+    public void setMarkerIcon(final Marker m, final Event e) {
+        if (e.getImageSmallUrl() != null && mCompanyIcons) {
+            Picasso.with(getActivity()).load(GeoMarketServiceApiBuilder.HOST
+                    + e.getImageSmallUrl()).resize(100, 100).into(new Target() {
+                @Override
+                public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                    BitmapDescriptor bitmapDescriptor = BitmapDescriptorFactory.fromBitmap(bitmap);
+                    m.setIcon(bitmapDescriptor);
+                }
+
+                @Override
+                public void onBitmapFailed(Drawable errorDrawable) {
+                }
+
+                @Override
+                public void onPrepareLoad(Drawable placeHolderDrawable) {
+                }
+            });
+        } else {
+            float hue = mMarkerCategoryColors.containsKey(e.getCategoryId()) ? mMarkerCategoryColors.get(e.getCategoryId())
+                    : BitmapDescriptorFactory.HUE_RED;
+            BitmapDescriptor bitmapDescriptor = BitmapDescriptorFactory.defaultMarker(hue);
+            m.setIcon(bitmapDescriptor);
+        }
     }
 
 
