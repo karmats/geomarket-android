@@ -7,6 +7,8 @@
     <string name="title_fragment_view_map_events">Map</string>
     <string name="title_fragment_view_list_events">List</string>
 
+    <string name="menu_search">Search events</string>
+
     <!-- Init texts -->
     <string name="init_initializing">Initializing...</string>
     <string name="init_fetch_position">Getting position</string>

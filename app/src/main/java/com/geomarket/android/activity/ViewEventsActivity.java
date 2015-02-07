@@ -14,6 +14,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
 import android.view.Menu;
@@ -188,6 +189,22 @@ public class ViewEventsActivity extends ActionBarActivity implements ViewListEve
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.view_events, menu);
+        MenuItem searchItem = menu.findItem(R.id.action_search);
+        SearchView searchView = (SearchView) searchItem.getActionView();
+        LogHelper.logInfo("View is " + searchView);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                LogHelper.logInfo("Searching for " + s);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                LogHelper.logInfo("Changing to " + s);
+                return true;
+            }
+        });
         return true;
     }
 
