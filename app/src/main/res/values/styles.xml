@@ -27,15 +27,18 @@
     <style name="PagerTitleStrip" parent="@android:style/Widget.Holo.Light.Button.Borderless.Small">
         <item name="android:textColor">@color/white</item>
         <item name="android:textSize">@dimen/text_size_large</item>
-        <item name="android:background">@color/dark_orange</item>
+        <item name="android:background">@drawable/sub_toolbar_bg</item>
         <item name="android:paddingTop">@dimen/pager_title_padding</item>
         <item name="android:paddingBottom">@dimen/pager_title_padding</item>
     </style>
 
     <style name="NavButton">
-        <item name="android:textColor">@color/white</item>
+        <item name="android:textColor">@color/blue</item>
         <item name="android:textSize">@dimen/text_size_normal</item>
         <item name="android:background">?attr/selectableItemBackground</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_weight">0.5</item>
     </style>
 
     <style name="OverflowText">

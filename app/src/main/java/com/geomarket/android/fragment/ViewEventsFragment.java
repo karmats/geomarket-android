@@ -85,12 +85,12 @@ public class ViewEventsFragment extends Fragment {
             newFragment = mListEventsFragment;
             mViewType = ViewType.LIST;
             // Set map icon
-            mToggleMapListBtn.setImageDrawable(getResources().getDrawable(R.drawable.ic_map));
+            mToggleMapListBtn.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_icon_map));
             mListener.onLayoutChange(ViewType.LIST);
         } else {
             mViewType = ViewType.MAP;
             // Set list icon
-            mToggleMapListBtn.setImageDrawable(getResources().getDrawable(R.drawable.ic_list));
+            mToggleMapListBtn.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_icon_list));
             mListener.onLayoutChange(ViewType.MAP);
         }
         getFragmentManager().beginTransaction().replace(R.id.view_events_container, newFragment)

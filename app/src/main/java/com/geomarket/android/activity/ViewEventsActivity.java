@@ -5,6 +5,7 @@ import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -72,7 +73,7 @@ public class ViewEventsActivity extends ActionBarActivity implements ViewListEve
      * The {@link android.support.v4.view.PagerAdapter} that will provide
      * fragments for each of the sections.
      */
-    SectionsPagerAdapter mSectionsPagerAdapter;
+    ImagePagerAdapter mSectionsPagerAdapter;
 
     // Views
     @InjectView(R.id.main_toolbar)
@@ -117,12 +118,12 @@ public class ViewEventsActivity extends ActionBarActivity implements ViewListEve
 
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getFragmentManager());
+        mSectionsPagerAdapter = new ImagePagerAdapter(getFragmentManager());
 
         // Set up the ViewPager with the sections adapter.
         mViewPager.setAdapter(mSectionsPagerAdapter);
         mSlidingTabLayout.setSelectedIndicatorColors(getResources().getColor(R.color.light_orange));
-        mSlidingTabLayout.setCustomTabView(R.layout.tab_item, R.id.tab_item_text);
+        mSlidingTabLayout.setCustomTabView(R.layout.tab_item, 0, R.id.tab_item_img);
         mSlidingTabLayout.setViewPager(mViewPager);
 
         // Get the events from extra
@@ -220,8 +221,8 @@ public class ViewEventsActivity extends ActionBarActivity implements ViewListEve
 
     @Override
     public void onBackPressed() {
-        if (mDetailsPanelLayout.isPanelExpanded()) {
-            mDetailsPanelLayout.collapsePanel();
+        if (mDetailsPanelLayout.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED) {
+            mDetailsPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
         } else if (mDrawerLayout.isDrawerOpen(Gravity.START | Gravity.LEFT)) {
             mDrawerLayout.closeDrawers();
             return;
@@ -233,27 +234,27 @@ public class ViewEventsActivity extends ActionBarActivity implements ViewListEve
     // Layout has changed from map to list, or vice versa
     @Override
     public void onLayoutChange(ViewEventsFragment.ViewType type) {
-        mDetailsPanelLayout.hidePanel();
+        mDetailsPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
     }
 
     // Clicking an event in list view
     @Override
     public void onListEventClick(Event event) {
         viewEvent(event);
-        mDetailsPanelLayout.expandPanel();
+        mDetailsPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
     }
 
     // Clicking an event in map view
     @Override
     public void onMapEventClick(Event event) {
         viewEvent(event);
-        mDetailsPanelLayout.showPanel();
+        mDetailsPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
     }
 
     // Clicking somewhere on the map
     @Override
     public void onMapClick() {
-        mDetailsPanelLayout.hidePanel();
+        mDetailsPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
     }
 
     private void viewEvent(Event event) {
@@ -276,9 +277,9 @@ public class ViewEventsActivity extends ActionBarActivity implements ViewListEve
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.
      */
-    public class SectionsPagerAdapter extends FragmentPagerAdapter {
+    public class ImagePagerAdapter extends FragmentPagerAdapter {
 
-        public SectionsPagerAdapter(FragmentManager fm) {
+        public ImagePagerAdapter(FragmentManager fm) {
             super(fm);
         }
 
@@ -300,7 +301,6 @@ public class ViewEventsActivity extends ActionBarActivity implements ViewListEve
 
         @Override
         public int getCount() {
-
             // Show 2 total pages.
             return 2;
         }
@@ -312,6 +312,16 @@ public class ViewEventsActivity extends ActionBarActivity implements ViewListEve
                     return getString(R.string.title_fragment_view_map_events).toUpperCase();
                 case 1:
                     return getString(R.string.title_fragment_view_list_events).toUpperCase();
+            }
+            return null;
+        }
+
+        public Drawable getPageDrawable(int position) {
+            switch (position) {
+                case 0:
+                    return getDrawable(R.drawable.ic_action_icon_map);
+                case 1:
+                    return getDrawable(R.drawable.ic_action_icon_list);
             }
             return null;
         }

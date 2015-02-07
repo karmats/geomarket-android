@@ -16,7 +16,7 @@
         android:layout_marginBottom="@dimen/activity_vertical_margin"
         android:layout_marginRight="@dimen/activity_horizontal_margin"
         android:background="@drawable/oval"
-        android:src="@drawable/ic_list"
+        android:src="@drawable/ic_action_icon_list"
         android:tint="@android:color/white"
         android:elevation="@dimen/elevation_high"/>
 

@@ -27,22 +27,25 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.HorizontalScrollView;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.geomarket.android.activity.ViewEventsActivity;
 
 /**
  * To be used with ViewPager to provide a tab indicator component which give constant feedback as to
  * the user's scroll progress.
- * <p>
+ * <p/>
  * To use the component, simply add it to your view hierarchy. Then in your
  * {@link android.app.Activity} or {@link android.support.v4.app.Fragment} call
  * {@link #setViewPager(android.support.v4.view.ViewPager)} providing it the ViewPager this layout is being used for.
- * <p>
+ * <p/>
  * The colors can be customized in two ways. The first and simplest is to provide an array of colors
  * via {@link #setSelectedIndicatorColors(int...)} and {@link #setDividerColors(int...)}. The
  * alternative is via the {@link com.geomarket.android.view.SlidingTabLayout.TabColorizer} interface which provides you complete control over
  * which color is used for any individual position.
- * <p>
- * The views used as tabs can be customized by calling {@link #setCustomTabView(int, int)},
+ * <p/>
+ * The views used as tabs can be customized by calling {@link #setCustomTabView(int, int, int)},
  * providing the layout ID of your custom layout.
  */
 public class SlidingTabLayout extends HorizontalScrollView {
@@ -73,6 +76,7 @@ public class SlidingTabLayout extends HorizontalScrollView {
 
     private int mTabViewLayoutId;
     private int mTabViewTextViewId;
+    private int mTabViewImgViewId;
 
     private ViewPager mViewPager;
     private ViewPager.OnPageChangeListener mViewPagerPageChangeListener;
@@ -103,7 +107,7 @@ public class SlidingTabLayout extends HorizontalScrollView {
 
     /**
      * Set the custom {@link com.geomarket.android.view.SlidingTabLayout.TabColorizer} to be used.
-     *
+     * <p/>
      * If you only require simple custmisation then you can use
      * {@link #setSelectedIndicatorColors(int...)} and {@link #setDividerColors(int...)} to achieve
      * similar effects.
@@ -143,11 +147,13 @@ public class SlidingTabLayout extends HorizontalScrollView {
      * Set the custom layout to be inflated for the tab views.
      *
      * @param layoutResId Layout id to be inflated
-     * @param textViewId id of the {@link android.widget.TextView} in the inflated view
+     * @param textViewId  id of the {@link android.widget.TextView} in the inflated view
+     * @param imgViewId   id of the  {@link android.widget.ImageView} in the inflated view
      */
-    public void setCustomTabView(int layoutResId, int textViewId) {
+    public void setCustomTabView(int layoutResId, int textViewId, int imgViewId) {
         mTabViewLayoutId = layoutResId;
         mTabViewTextViewId = textViewId;
+        mTabViewImgViewId = imgViewId;
     }
 
     /**
@@ -166,7 +172,7 @@ public class SlidingTabLayout extends HorizontalScrollView {
 
     /**
      * Create a default view to be used for tabs. This is called if a custom tab view is not set via
-     * {@link #setCustomTabView(int, int)}.
+     * {@link #setCustomTabView(int, int, int)}.
      */
     protected TextView createDefaultTabView(Context context) {
         TextView textView = new TextView(context);
@@ -200,24 +206,26 @@ public class SlidingTabLayout extends HorizontalScrollView {
 
         for (int i = 0; i < adapter.getCount(); i++) {
             View tabView = null;
-            TextView tabTitleView = null;
+            View tabTitleView = null;
 
             if (mTabViewLayoutId != 0) {
                 // If there is a custom tab view layout id set, try and inflate it
                 tabView = LayoutInflater.from(getContext()).inflate(mTabViewLayoutId, mTabStrip,
                         false);
-                tabTitleView = (TextView) tabView.findViewById(mTabViewTextViewId);
+                // Img view or text view
+                tabTitleView = mTabViewTextViewId > 0 ? tabView.findViewById(mTabViewTextViewId) :
+                        tabView.findViewById(mTabViewImgViewId);
             }
 
             if (tabView == null) {
                 tabView = createDefaultTabView(getContext());
             }
 
-            if (tabTitleView == null && TextView.class.isInstance(tabView)) {
-                tabTitleView = (TextView) tabView;
+            if (TextView.class.isInstance((tabTitleView))) {
+                ((TextView) tabTitleView).setText(adapter.getPageTitle(i));
+            } else {
+                ((ImageView) tabTitleView).setImageDrawable(((ViewEventsActivity.ImagePagerAdapter) adapter).getPageDrawable(i));
             }
-
-            tabTitleView.setText(adapter.getPageTitle(i));
             tabView.setOnClickListener(tabClickListener);
 
             mTabStrip.addView(tabView);
