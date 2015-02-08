@@ -2,7 +2,6 @@ package com.geomarket.android.task;
 
 import com.geomarket.android.api.ApiResult;
 import com.geomarket.android.api.Language;
-import com.geomarket.android.util.LogHelper;
 
 import java.util.List;
 
@@ -18,12 +17,8 @@ public class FetchLanguages extends AbstractApiTask<Void, List<Language>> {
     }
 
     @Override
-    protected ApiResult<List<Language>> doInBackground(Void... params) {
-        try {
-            return mApi.getLanguages();
-        } catch (RetrofitError e) {
-            LogHelper.logException(e);
-        }
-        return null;
+    ApiResult<List<Language>> fetchFromServer(Void... params) throws RetrofitError {
+        return mApi.getLanguages();
     }
+
 }

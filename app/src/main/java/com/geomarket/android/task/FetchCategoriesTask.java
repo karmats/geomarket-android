@@ -6,7 +6,6 @@ import android.preference.PreferenceManager;
 import com.geomarket.android.api.ApiResult;
 import com.geomarket.android.api.Category;
 import com.geomarket.android.api.Language;
-import com.geomarket.android.util.LogHelper;
 
 import java.util.List;
 
@@ -25,14 +24,9 @@ public class FetchCategoriesTask extends AbstractApiTask<Void, List<Category>> {
     }
 
     @Override
-    protected ApiResult<List<Category>> doInBackground(Void... params) {
-        try {
-            String languageId = PreferenceManager.getDefaultSharedPreferences(mContext).getString(Language.PREF_LANGUAGE_ID, "");
-            return mApi.getCategoriesByLanguage(languageId);
-        } catch (RetrofitError e) {
-            LogHelper.logException(e);
-        }
-        return null;
+    ApiResult<List<Category>> fetchFromServer(Void... params) throws RetrofitError {
+        String languageId = PreferenceManager.getDefaultSharedPreferences(mContext).getString(Language.PREF_LANGUAGE_ID, "");
+        return mApi.getCategoriesByLanguage(languageId);
     }
 
 }

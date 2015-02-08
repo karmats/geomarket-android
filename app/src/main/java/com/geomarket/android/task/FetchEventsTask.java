@@ -7,7 +7,6 @@ import android.preference.PreferenceManager;
 import com.geomarket.android.api.ApiResult;
 import com.geomarket.android.api.Event;
 import com.geomarket.android.api.Language;
-import com.geomarket.android.util.LogHelper;
 
 import java.util.List;
 
@@ -26,14 +25,10 @@ public class FetchEventsTask extends AbstractApiTask<Location, List<Event>> {
     }
 
     @Override
-    protected ApiResult<List<Event>> doInBackground(Location... locations) {
+    ApiResult<List<Event>> fetchFromServer(Location... locations) throws RetrofitError {
         Location loc = locations[0];
-        try {
-            String languageId = PreferenceManager.getDefaultSharedPreferences(mContext).getString(Language.PREF_LANGUAGE_ID, "");
-            return mApi.getEventsForLocation(loc.getLatitude(), loc.getLongitude(), 200, languageId);
-        } catch (RetrofitError e) {
-            LogHelper.logException(e);
-        }
-        return null;
+        String languageId = PreferenceManager.getDefaultSharedPreferences(mContext).getString(Language.PREF_LANGUAGE_ID, "");
+        return mApi.getEventsForLocation(loc.getLatitude(), loc.getLongitude(), 200, languageId);
     }
+
 }

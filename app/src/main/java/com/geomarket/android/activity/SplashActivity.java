@@ -75,7 +75,7 @@ public class SplashActivity extends Activity {
                 @Override
                 public void onFailure(String error) {
                     // Couldn't get language, stop the application
-                    Toast.makeText(SplashActivity.this, error, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SplashActivity.this, error, Toast.LENGTH_LONG).show();
                     finish();
                 }
             }).execute();
@@ -125,7 +125,7 @@ public class SplashActivity extends Activity {
 
             @Override
             public void onFailure(String error) {
-                Toast.makeText(SplashActivity.this, error, Toast.LENGTH_SHORT).show();
+                Toast.makeText(SplashActivity.this, error, Toast.LENGTH_LONG).show();
                 mCategories = new ArrayList<>();
                 startViewEventsActivity();
             }
@@ -144,7 +144,7 @@ public class SplashActivity extends Activity {
 
             @Override
             public void onFailure(String error) {
-                Toast.makeText(SplashActivity.this, error, Toast.LENGTH_SHORT).show();
+                Toast.makeText(SplashActivity.this, error, Toast.LENGTH_LONG).show();
                 mEvents = new ArrayList<>();
                 startViewEventsActivity();
             }

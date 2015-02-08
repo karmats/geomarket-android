@@ -9,6 +9,7 @@ public class ApiResult<R> {
 
     private Integer code;
     private R data;
+    private String error;
 
     public Integer getCode() {
         return code;
@@ -24,5 +25,13 @@ public class ApiResult<R> {
 
     public void setData(R data) {
         this.data = data;
+    }
+
+    public String getError() {
+        return error;
+    }
+
+    public void setError(String error) {
+        this.error = error;
     }
 }
