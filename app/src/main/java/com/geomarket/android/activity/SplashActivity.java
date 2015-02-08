@@ -36,6 +36,7 @@ public class SplashActivity extends Activity {
 
     private ArrayList<Event> mEvents;
     private ArrayList<Category> mCategories;
+    private Location mLocation;
 
     // Views
     @InjectView(R.id.loading_text)
@@ -87,15 +88,16 @@ public class SplashActivity extends Activity {
         // Fetch events near user
         mInitText.setText(getString(R.string.init_fetch_position));
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        Location loc = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-        if (loc != null) {
-            buildFetchEventsTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, loc);
+        mLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+        if (mLocation != null) {
+            buildFetchEventsTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, mLocation);
         } else {
             // No last known location found, request for it
-            locationManager.requestSingleUpdate(LocationManager.NETWORK_PROVIDER, new LocationListener() {
+            locationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, new LocationListener() {
                 @Override
                 public void onLocationChanged(Location location) {
-                    buildFetchEventsTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, location);
+                    mLocation = location;
+                    buildFetchEventsTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, mLocation);
                 }
 
                 @Override
@@ -158,6 +160,7 @@ public class SplashActivity extends Activity {
             Intent intent = new Intent(this, ViewEventsActivity.class);
             intent.putParcelableArrayListExtra(ViewEventsActivity.EVENTS_EXTRA, mEvents);
             intent.putParcelableArrayListExtra(ViewEventsActivity.CATEGORIES_EXTRA, mCategories);
+            intent.putExtra(ViewEventsActivity.LOCATION_EXTRA, mLocation);
             startActivity(intent);
             // Finish this activity, so it won't come up on back-button press
             finish();

@@ -2,12 +2,10 @@ package com.geomarket.android.activity;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
-import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -52,6 +50,7 @@ public class ViewEventsActivity extends ActionBarActivity implements ViewListEve
 
     public static final String EVENTS_EXTRA = "events_extra";
     public static final String CATEGORIES_EXTRA = "categories_extra";
+    public static final String LOCATION_EXTRA = "location_extra";
 
     /**
      * The {@link SlidingUpPanelLayout} that will show details about an event.
@@ -130,6 +129,7 @@ public class ViewEventsActivity extends ActionBarActivity implements ViewListEve
         // Get the events from extra
         mEvents = getIntent().getParcelableArrayListExtra(EVENTS_EXTRA);
         mCategories = getIntent().getParcelableArrayListExtra(CATEGORIES_EXTRA);
+        mLatestLocation = getIntent().getParcelableExtra(LOCATION_EXTRA);
 
         // Set the adapter for the list view
         mDrawerList.setAdapter(new ArrayAdapter<>(this,
@@ -168,9 +168,6 @@ public class ViewEventsActivity extends ActionBarActivity implements ViewListEve
             }
         });
 
-        // User location
-        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        mLatestLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
     }
 
     @OnClick(R.id.details_next_btn)
@@ -191,7 +188,7 @@ public class ViewEventsActivity extends ActionBarActivity implements ViewListEve
         getMenuInflater().inflate(R.menu.view_events, menu);
         MenuItem searchItem = menu.findItem(R.id.action_search);
         SearchView searchView = (SearchView) searchItem.getActionView();
-        LogHelper.logInfo("View is " + searchView);
+        searchView.setQueryHint(getString(R.string.menu_search));
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
@@ -336,9 +333,9 @@ public class ViewEventsActivity extends ActionBarActivity implements ViewListEve
         public Drawable getPageDrawable(int position) {
             switch (position) {
                 case 0:
-                    return getDrawable(R.drawable.ic_action_icon_map);
+                    return getResources().getDrawable(R.drawable.ic_action_icon_map);
                 case 1:
-                    return getDrawable(R.drawable.ic_action_icon_list);
+                    return getResources().getDrawable(R.drawable.ic_action_icon_list);
             }
             return null;
         }
