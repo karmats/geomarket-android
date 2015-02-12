@@ -2,6 +2,7 @@
 <resources>
 
     <string name="app_name">Dibbler</string>
+    <string name="facebook_app_id">611481392286903</string>
     <string name="title_activity_view_events">Events near you</string>
     <string name="title_activity_login">Sign in</string>
     <string name="title_fragment_view_map_events">Map</string>

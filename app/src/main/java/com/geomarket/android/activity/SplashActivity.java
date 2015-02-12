@@ -93,7 +93,7 @@ public class SplashActivity extends Activity {
             buildFetchEventsTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, mLocation);
         } else {
             // No last known location found, request for it
-            locationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, new LocationListener() {
+            locationManager.requestSingleUpdate(LocationManager.NETWORK_PROVIDER, new LocationListener() {
                 @Override
                 public void onLocationChanged(Location location) {
                     mLocation = location;

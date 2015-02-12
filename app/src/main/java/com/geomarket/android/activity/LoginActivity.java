@@ -12,6 +12,12 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
 
+import com.facebook.Request;
+import com.facebook.Response;
+import com.facebook.Session;
+import com.facebook.SessionState;
+import com.facebook.model.GraphUser;
+import com.facebook.widget.LoginButton;
 import com.geomarket.android.R;
 import com.geomarket.android.util.LogHelper;
 import com.google.android.gms.common.ConnectionResult;
@@ -28,7 +34,7 @@ import butterknife.InjectView;
  * A login screen that offers login via Google+ sign in.
  * <p/>
  */
-public class LoginActivity extends Activity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+public class LoginActivity extends Activity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, Session.StatusCallback {
 
     // A magic number we will use to know that our sign-in error resolution activity has completed
     private static final int RC_SIGN_IN = 49404;
@@ -46,6 +52,8 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
     View mProgressView;
     @InjectView((R.id.plus_sign_in_button))
     SignInButton mPlusSignInButton;
+    @InjectView(R.id.facebook_sign_in_button)
+    LoginButton mFacebookLoginButton;
     @InjectView(R.id.login_form)
     View mLoginFormView;
     @InjectView(R.id.user_info)
@@ -89,6 +97,20 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
             // Services.
             mPlusSignInButton.setVisibility(View.GONE);
         }
+        mFacebookLoginButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Session session = Session.getActiveSession();
+                if (!session.isOpened() && !session.isClosed()) {
+                    session.openForRead(new Session.OpenRequest(LoginActivity.this)
+                            .setPermissions("public_profile")
+                            .setCallback(LoginActivity.this));
+                } else {
+                    Session.openActiveSession(LoginActivity.this, true, LoginActivity.this);
+                }
+            }
+        });
+
     }
 
     @Override
@@ -158,6 +180,12 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
         LogHelper.logError("Connection suspended, reason " + i);
     }
 
+
+    @Override
+    public void call(Session session, SessionState sessionState, Exception e) {
+        updateUserInfo();
+    }
+
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
     public void showProgress(final boolean show) {
         // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
@@ -192,7 +220,26 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
     }
 
     private void updateUserInfo() {
-        if (mGoogleApiClient.isConnected()) {
+        Session session = Session.getActiveSession();
+        if (session != null) {
+            LogHelper.logInfo("Session not null getting user info");
+            // Request user data and show the results
+            Request.newMeRequest(session, new Request.GraphUserCallback() {
+
+                @Override
+                public void onCompleted(GraphUser user, Response response) {
+                    LogHelper.logInfo("Complete!");
+                    LogHelper.logInfo(response.getRawResponse());
+                    if (user != null) {
+                        mUserInfoView.setVisibility(View.VISIBLE);
+                        mPlusSignInButton.setVisibility(View.GONE);
+                        // Display the parsed user info
+                        mUserInfoName.setText(user.getFirstName() + " " + user.getLastName());
+                        mUserInfoId.setText(user.getId());
+                    }
+                }
+            }).executeAsync();
+        } else if (mGoogleApiClient.isConnected()) {
             mUserInfoView.setVisibility(View.VISIBLE);
             mPlusSignInButton.setVisibility(View.GONE);
             Person loggedInUser = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient);
