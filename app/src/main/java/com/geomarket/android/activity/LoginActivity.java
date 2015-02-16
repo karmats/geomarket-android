@@ -235,6 +235,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
                         mPlusSignInButton.setVisibility(View.GONE);
                         // Display the parsed user info
                         mUserInfoName.setText(user.getFirstName() + " " + user.getLastName());
+                        mUserInfoGender.setText((String) user.asMap().get("gender"));
                         mUserInfoId.setText(user.getId());
                     }
                 }
