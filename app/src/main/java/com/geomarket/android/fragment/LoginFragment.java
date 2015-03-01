@@ -1,15 +1,17 @@
-package com.geomarket.android.activity;
+package com.geomarket.android.fragment;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
-import android.app.Activity;
+import android.app.Fragment;
 import android.content.Intent;
-import android.content.IntentSender;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.facebook.Request;
@@ -34,7 +36,7 @@ import butterknife.InjectView;
  * A login screen that offers login via Google+ sign in.
  * <p/>
  */
-public class LoginActivity extends Activity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, Session.StatusCallback {
+public class LoginFragment extends Fragment implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, Session.StatusCallback {
 
     // A magic number we will use to know that our sign-in error resolution activity has completed
     private static final int RC_SIGN_IN = 49404;
@@ -65,20 +67,30 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
     @InjectView(R.id.user_info_gender)
     TextView mUserInfoGender;
 
+    public static LoginFragment newInstance() {
+        return new LoginFragment();
+    }
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
-        ButterKnife.inject(this);
 
         // Initialize the PlusClient connection.
         // Scopes indicate the information about the user your application will be able to access.
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
+        mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .addApi(Plus.API)
                 .addScope(Plus.SCOPE_PLUS_LOGIN)
                 .build();
+
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View v = inflater.inflate(R.layout.fragment_login, container, false);
+        ButterKnife.inject(this, v);
 
         if (supportsGooglePlayServices()) {
             updateUserInfo();
@@ -102,25 +114,25 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
             public void onClick(View v) {
                 Session session = Session.getActiveSession();
                 if (!session.isOpened() && !session.isClosed()) {
-                    session.openForRead(new Session.OpenRequest(LoginActivity.this)
+                    session.openForRead(new Session.OpenRequest(getActivity())
                             .setPermissions("public_profile")
-                            .setCallback(LoginActivity.this));
+                            .setCallback(LoginFragment.this));
                 } else {
-                    Session.openActiveSession(LoginActivity.this, true, LoginActivity.this);
+                    Session.openActiveSession(getActivity(), true, LoginFragment.this);
                 }
             }
         });
-
+        return v;
     }
 
     @Override
-    protected void onStart() {
+    public void onStart() {
         super.onStart();
         mGoogleApiClient.connect();
     }
 
     @Override
-    protected void onStop() {
+    public void onStop() {
         super.onStop();
         if (mGoogleApiClient.isConnected()) {
             mGoogleApiClient.disconnect();
@@ -128,7 +140,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int responseCode, Intent intent) {
+    public void onActivityResult(int requestCode, int responseCode, Intent intent) {
         if (requestCode == RC_SIGN_IN) {
             if (!mGoogleApiClient.isConnecting()) {
                 mGoogleApiClient.connect();
@@ -155,16 +167,16 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
     @Override
     public void onConnectionFailed(ConnectionResult result) {
         if (!mIntentInProgress && result.hasResolution()) {
-            try {
+            //try {
                 mIntentInProgress = true;
-                startIntentSenderForResult(result.getResolution().getIntentSender(),
-                        RC_SIGN_IN, null, 0, 0, 0);
-            } catch (IntentSender.SendIntentException e) {
+                /*startIntentSenderForResult(result.getResolution().getIntentSender(),
+                        RC_SIGN_IN, null, 0, 0, 0);*/
+            /*} catch (IntentSender.SendIntentException e) {
                 // The intent was canceled before it was sent.  Return to the default
                 // state and attempt to connect to get an updated ConnectionResult.
                 mIntentInProgress = false;
                 mGoogleApiClient.connect();
-            }
+            }*/
         }
     }
 
@@ -260,7 +272,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
      * @return whether the device supports Google Play Services
      */
     private boolean supportsGooglePlayServices() {
-        return GooglePlayServicesUtil.isGooglePlayServicesAvailable(this) ==
+        return GooglePlayServicesUtil.isGooglePlayServicesAvailable(getActivity()) ==
                 ConnectionResult.SUCCESS;
     }
 

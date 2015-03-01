@@ -30,6 +30,7 @@ import com.geomarket.android.R;
 import com.geomarket.android.api.Category;
 import com.geomarket.android.api.Event;
 import com.geomarket.android.api.service.GeoMarketServiceApiBuilder;
+import com.geomarket.android.fragment.LoginFragment;
 import com.geomarket.android.fragment.MapEventsFragment;
 import com.geomarket.android.fragment.ViewEventDetailsFragment;
 import com.geomarket.android.fragment.ViewEventsFragment;
@@ -215,7 +216,8 @@ public class ViewEventsActivity extends ActionBarActivity implements ViewListEve
         }
         int id = item.getItemId();
         if (id == R.id.action_login) {
-            startActivity(new Intent(ViewEventsActivity.this, LoginActivity.class));
+            getFragmentManager().beginTransaction().replace(R.id.fragment_container, LoginFragment.newInstance())
+                    .addToBackStack(null).commit();
             return true;
         }
         return super.onOptionsItemSelected(item);
