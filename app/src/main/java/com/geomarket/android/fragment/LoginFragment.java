@@ -3,10 +3,10 @@ package com.geomarket.android.fragment;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
-import android.app.Fragment;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -30,6 +30,7 @@ import com.google.android.gms.plus.model.people.Person;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import butterknife.OnClick;
 
 /**
  * A login screen that offers login via Google+ sign in.
@@ -89,6 +90,7 @@ public class LoginFragment extends Fragment implements GoogleApiClient.Connectio
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_login, container, false);
         ButterKnife.inject(this, v);
+        mFacebookLoginButton.setFragment(this);
 
         if (supportsGooglePlayServices()) {
             updateUserInfo();
@@ -107,20 +109,19 @@ public class LoginFragment extends Fragment implements GoogleApiClient.Connectio
             // Services.
             mPlusSignInButton.setVisibility(View.GONE);
         }
-        mFacebookLoginButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Session session = Session.getActiveSession();
-                if (!session.isOpened() && !session.isClosed()) {
-                    session.openForRead(new Session.OpenRequest(getActivity())
-                            .setPermissions("public_profile")
-                            .setCallback(LoginFragment.this));
-                } else {
-                    Session.openActiveSession(getActivity(), true, LoginFragment.this);
-                }
-            }
-        });
         return v;
+    }
+
+    @OnClick(R.id.facebook_sign_in_button)
+    public void onFacebookClickLogin() {
+        Session session = Session.getActiveSession();
+        if (!session.isOpened() && !session.isClosed()) {
+            session.openForRead(new Session.OpenRequest(this)
+                    .setPermissions("public_profile")
+                    .setCallback(LoginFragment.this));
+        } else {
+            Session.openActiveSession(getActivity(), this, true, LoginFragment.this);
+        }
     }
 
     @Override
@@ -193,7 +194,10 @@ public class LoginFragment extends Fragment implements GoogleApiClient.Connectio
 
     @Override
     public void call(Session session, SessionState sessionState, Exception e) {
-        updateUserInfo();
+        LogHelper.logInfo("Session state open? " + sessionState.isOpened() + " Session: " + session);
+        if (sessionState.isOpened()) {
+            updateUserInfo();
+        }
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
@@ -231,7 +235,7 @@ public class LoginFragment extends Fragment implements GoogleApiClient.Connectio
 
     private void updateUserInfo() {
         Session session = Session.getActiveSession();
-        if (session != null) {
+        if (session != null && session.isOpened()) {
             LogHelper.logInfo("Session not null getting user info");
             // Request user data and show the results
             Request.newMeRequest(session, new Request.GraphUserCallback() {
@@ -239,6 +243,7 @@ public class LoginFragment extends Fragment implements GoogleApiClient.Connectio
                 @Override
                 public void onCompleted(GraphUser user, Response response) {
                     LogHelper.logInfo("Complete!");
+                    LogHelper.logInfo("Response is: " + response.getRawResponse());
                     if (user != null) {
                         LogHelper.logInfo("User not null omg, " + user.getFirstName());
                         mUserInfoView.setVisibility(View.VISIBLE);

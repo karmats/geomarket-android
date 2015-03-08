@@ -110,13 +110,13 @@ public class MainActivity extends ActionBarActivity implements ViewListEventsFra
 
             @Override
             public void onPanelCollapsed(View view) {
-                ViewEventsFragment viewEventsFragment = (ViewEventsFragment) getFragmentManager().findFragmentByTag(VIEW_EVENTS_TAG);
+                ViewEventsFragment viewEventsFragment = (ViewEventsFragment) getSupportFragmentManager().findFragmentByTag(VIEW_EVENTS_TAG);
                 viewEventsFragment.onHideEventDetail();
             }
 
             @Override
             public void onPanelExpanded(View view) {
-                ViewEventsFragment viewEventsFragment = (ViewEventsFragment) getFragmentManager().findFragmentByTag(VIEW_EVENTS_TAG);
+                ViewEventsFragment viewEventsFragment = (ViewEventsFragment) getSupportFragmentManager().findFragmentByTag(VIEW_EVENTS_TAG);
                 viewEventsFragment.onViewEventDetail();
             }
 
@@ -130,7 +130,7 @@ public class MainActivity extends ActionBarActivity implements ViewListEventsFra
         });
 
         // Start view events fragment
-        getFragmentManager().beginTransaction().replace(R.id.fragment_container, ViewEventsFragment.newInstance(mEvents, mCategories,
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, ViewEventsFragment.newInstance(mEvents, mCategories,
                 new Event.Location(mLatestLocation.getLatitude(), mLatestLocation.getLongitude())), VIEW_EVENTS_TAG).addToBackStack(null).commit();
     }
 
@@ -168,7 +168,7 @@ public class MainActivity extends ActionBarActivity implements ViewListEventsFra
         int id = item.getItemId();
         if (id == R.id.action_login) {
             LogHelper.logInfo("Action login clicked");
-            getFragmentManager().beginTransaction().replace(R.id.fragment_container, LoginFragment.newInstance())
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, LoginFragment.newInstance())
                     .addToBackStack(null).commit();
             return true;
         }
@@ -244,7 +244,7 @@ public class MainActivity extends ActionBarActivity implements ViewListEventsFra
         nf.setMaximumFractionDigits(1);
         String distanceString = nf.format(mLatestLocation.distanceTo(companyLoc) / 1000);
         mEventDistance.setText(distanceString + " km");
-        getFragmentManager().beginTransaction().replace(
+        getSupportFragmentManager().beginTransaction().replace(
                 R.id.view_event_fragment, ViewEventDetailsFragment.newInstance(event)).commit();
     }
 

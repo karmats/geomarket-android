@@ -2,7 +2,7 @@ package com.geomarket.android.fragment;
 
 
 import android.app.Activity;
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -15,6 +15,7 @@ import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
@@ -35,7 +36,7 @@ import java.util.Map;
  * Use the {@link MapEventsFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class MapEventsFragment extends MapFragment implements GoogleMap.OnCameraChangeListener {
+public class MapEventsFragment extends SupportMapFragment implements GoogleMap.OnCameraChangeListener {
     private static final String EVENTS_PARAM = "events_param";
     private static final String CATEGORIES_PARAM = "categories_param";
     private static final String LOCATION_PARAM = "location_param";
