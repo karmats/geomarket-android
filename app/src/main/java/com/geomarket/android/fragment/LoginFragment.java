@@ -240,8 +240,8 @@ public class LoginFragment extends Fragment implements GoogleApiClient.Connectio
                 @Override
                 public void onCompleted(GraphUser user, Response response) {
                     LogHelper.logInfo("Complete!");
-                    LogHelper.logInfo(response.getRawResponse());
                     if (user != null) {
+                        LogHelper.logInfo("User not null omg, " + user.getFirstName());
                         mUserInfoView.setVisibility(View.VISIBLE);
                         mPlusSignInButton.setVisibility(View.GONE);
                         // Display the parsed user info

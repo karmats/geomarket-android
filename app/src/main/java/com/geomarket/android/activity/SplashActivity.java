@@ -157,10 +157,10 @@ public class SplashActivity extends Activity {
         // Only Start the activity if both categories and categories have been fetched
         if (mEvents != null && mCategories != null) {
             // Start the view events activity
-            Intent intent = new Intent(this, ViewEventsActivity.class);
-            intent.putParcelableArrayListExtra(ViewEventsActivity.EVENTS_EXTRA, mEvents);
-            intent.putParcelableArrayListExtra(ViewEventsActivity.CATEGORIES_EXTRA, mCategories);
-            intent.putExtra(ViewEventsActivity.LOCATION_EXTRA, mLocation);
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.putParcelableArrayListExtra(MainActivity.EVENTS_EXTRA, mEvents);
+            intent.putParcelableArrayListExtra(MainActivity.CATEGORIES_EXTRA, mCategories);
+            intent.putExtra(MainActivity.LOCATION_EXTRA, mLocation);
             startActivity(intent);
             // Finish this activity, so it won't come up on back-button press
             finish();
