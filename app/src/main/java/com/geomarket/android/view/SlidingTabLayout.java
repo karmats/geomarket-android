@@ -30,7 +30,7 @@ import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.geomarket.android.activity.ViewEventsActivity;
+import com.geomarket.android.fragment.ViewEventsFragment;
 
 /**
  * To be used with ViewPager to provide a tab indicator component which give constant feedback as to
@@ -224,7 +224,7 @@ public class SlidingTabLayout extends HorizontalScrollView {
             if (TextView.class.isInstance((tabTitleView))) {
                 ((TextView) tabTitleView).setText(adapter.getPageTitle(i));
             } else {
-                ((ImageView) tabTitleView).setImageDrawable(((ViewEventsActivity.ImagePagerAdapter) adapter).getPageDrawable(i));
+                ((ImageView) tabTitleView).setImageDrawable(((ViewEventsFragment.ImagePagerAdapter) adapter).getPageDrawable(i));
             }
             tabView.setOnClickListener(tabClickListener);
 

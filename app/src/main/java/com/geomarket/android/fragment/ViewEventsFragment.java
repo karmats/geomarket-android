@@ -2,18 +2,22 @@ package com.geomarket.android.fragment;
 
 import android.app.Activity;
 import android.app.Fragment;
-import android.app.FragmentTransaction;
+import android.app.FragmentManager;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.v13.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
+import android.widget.Button;
+import android.widget.LinearLayout;
 
 import com.geomarket.android.R;
 import com.geomarket.android.api.Category;
 import com.geomarket.android.api.Event;
 import com.geomarket.android.util.LogHelper;
-import com.google.android.gms.maps.MapFragment;
+import com.geomarket.android.view.SlidingTabLayout;
 
 import java.util.ArrayList;
 
@@ -30,15 +34,33 @@ public class ViewEventsFragment extends Fragment {
     private ArrayList<Category> mCategories;
     private Event.Location mLocation;
 
-    private MapFragment mMapFragment;
-    private ViewListEventsFragment mListEventsFragment;
+    // The callback listener
+    private OnViewEventsListener mListener;
 
-    private ViewType mViewType;
+    /**
+     * The {@link android.support.v4.view.ViewPager} that will host the section contents.
+     */
+    @InjectView(R.id.pager)
+    ViewPager mViewPager;
 
-    private OnLayoutChangeListener mListener;
+    /**
+     * The {@link com.geomarket.android.view.SlidingTabLayout} for tab indication.
+     */
+    @InjectView(R.id.sliding_tabs)
+    SlidingTabLayout mSlidingTabLayout;
 
-    @InjectView(R.id.map_list_btn)
-    ImageButton mToggleMapListBtn;
+    /**
+     * The {@link android.support.v4.view.PagerAdapter} that will provide
+     * fragments for each of the sections.
+     */
+    ImagePagerAdapter mSectionsPagerAdapter;
+
+    @InjectView(R.id.details_btn_view)
+    LinearLayout mButtonView;
+    @InjectView(R.id.details_next_btn)
+    Button mNextButton;
+    @InjectView(R.id.details_prev_btn)
+    Button mPreviousButton;
 
 
     public static ViewEventsFragment newInstance(ArrayList<Event> events, ArrayList<Category> categories, Event.Location location) {
@@ -67,41 +89,46 @@ public class ViewEventsFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_view_events, view, false);
         ButterKnife.inject(this, v);
 
-        // Set up the map
-        mMapFragment = MapEventsFragment.newInstance(mEvents, mCategories, mLocation);
+        // Create the adapter that will return a fragment for each of the three
+        // primary sections of the activity.
+        mSectionsPagerAdapter = new ImagePagerAdapter(getFragmentManager());
 
-        // Set up the list fragment
-        mListEventsFragment = ViewListEventsFragment.newInstance(mEvents);
+        // Set up the ViewPager with the sections adapter.
+        mViewPager.setAdapter(mSectionsPagerAdapter);
+        mSlidingTabLayout.setSelectedIndicatorColors(getResources().getColor(R.color.light_orange));
+        mSlidingTabLayout.setCustomTabView(R.layout.tab_item, 0, R.id.tab_item_img);
+        mSlidingTabLayout.setViewPager(mViewPager);
 
-        getFragmentManager().beginTransaction().replace(R.id.view_events_container, mMapFragment).commit();
-        mViewType = ViewType.MAP;
         return v;
     }
 
-    @OnClick(R.id.map_list_btn)
-    public void toggleView() {
-        Fragment newFragment = mMapFragment;
-        if (mViewType == ViewType.MAP) {
-            newFragment = mListEventsFragment;
-            mViewType = ViewType.LIST;
-            // Set map icon
-            mToggleMapListBtn.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_icon_map));
-            mListener.onLayoutChange(ViewType.LIST);
-        } else {
-            mViewType = ViewType.MAP;
-            // Set list icon
-            mToggleMapListBtn.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_icon_list));
-            mListener.onLayoutChange(ViewType.MAP);
-        }
-        getFragmentManager().beginTransaction().replace(R.id.view_events_container, newFragment)
-                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE).commit();
+    @OnClick(R.id.details_next_btn)
+    public void onNextButtonClicked() {
+        mListener.viewNextEvent();
+
+    }
+
+    @OnClick(R.id.details_prev_btn)
+    public void onPreviousButtonClicked() {
+        mListener.viewPreviousEvent();
+    }
+
+    // Called from main activity
+    public void onViewEventDetail() {
+        mButtonView.setVisibility(View.VISIBLE);
+        mSlidingTabLayout.setVisibility(View.GONE);
+    }
+
+    public void onHideEventDetail() {
+        mButtonView.setVisibility(View.GONE);
+        mSlidingTabLayout.setVisibility(View.VISIBLE);
     }
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-            mListener = (OnLayoutChangeListener) activity;
+            mListener = (OnViewEventsListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
                     + " must implement OnLayoutChangedListener");
@@ -114,22 +141,74 @@ public class ViewEventsFragment extends Fragment {
         mListener = null;
     }
 
+
     /**
-     * Enum to describe current view type
+     * A {@link android.support.v13.app.FragmentPagerAdapter} that returns a fragment corresponding to
+     * one of the sections/tabs/pages.
      */
-    public enum ViewType {
-        MAP, LIST
+    public class ImagePagerAdapter extends FragmentPagerAdapter {
+
+        public ImagePagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            // getItem is called to instantiate the fragment for the given page.
+            // Return a PlaceholderFragment (defined as a static inner class below).
+            switch (position) {
+                case 0:
+                    return MapEventsFragment.newInstance(mEvents, mCategories,
+                            new Event.Location(mLocation.getLatitude(), mLocation.getLongitude()));
+
+                case 1:
+                    return ViewListEventsFragment.newInstance(mEvents);
+            }
+            LogHelper.logError("Something is terribly wrong, got tab position " + position);
+            return null;
+        }
+
+        @Override
+        public int getCount() {
+            // Show 2 total pages.
+            return 2;
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            switch (position) {
+                case 0:
+                    return getString(R.string.title_fragment_view_map_events).toUpperCase();
+                case 1:
+                    return getString(R.string.title_fragment_view_list_events).toUpperCase();
+            }
+            return null;
+        }
+
+        public Drawable getPageDrawable(int position) {
+            switch (position) {
+                case 0:
+                    return getResources().getDrawable(R.drawable.ic_action_icon_map);
+                case 1:
+                    return getResources().getDrawable(R.drawable.ic_action_icon_list);
+            }
+            return null;
+        }
     }
 
     /**
-     * When layout changes
+     * Interface for communication with this fragment
      */
-    public interface OnLayoutChangeListener {
+    public interface OnViewEventsListener {
+
         /**
-         * Called when the layout has changed
-         *
-         * @param type The ViewType layout it has changed to
+         * View the next event
          */
-        void onLayoutChange(ViewType type);
+        public void viewNextEvent();
+
+        /**
+         * View previous event
+         */
+        public void viewPreviousEvent();
     }
 }

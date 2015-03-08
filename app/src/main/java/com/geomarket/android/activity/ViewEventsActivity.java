@@ -1,14 +1,8 @@
 package com.geomarket.android.activity;
 
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.content.Intent;
 import android.content.res.Configuration;
-import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Bundle;
-import android.support.v13.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -20,9 +14,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -36,7 +28,6 @@ import com.geomarket.android.fragment.ViewEventDetailsFragment;
 import com.geomarket.android.fragment.ViewEventsFragment;
 import com.geomarket.android.fragment.ViewListEventsFragment;
 import com.geomarket.android.util.LogHelper;
-import com.geomarket.android.view.SlidingTabLayout;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.squareup.picasso.Picasso;
 
@@ -45,13 +36,16 @@ import java.util.ArrayList;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import butterknife.OnClick;
 
-public class ViewEventsActivity extends ActionBarActivity implements ViewListEventsFragment.OnListEventClickListener, MapEventsFragment.OnMapEventClickListener, ViewEventsFragment.OnLayoutChangeListener {
+public class ViewEventsActivity extends ActionBarActivity implements ViewListEventsFragment.OnListEventClickListener, MapEventsFragment.OnMapEventClickListener, ViewEventsFragment.OnViewEventsListener {
 
+    // Extras from splash activity
     public static final String EVENTS_EXTRA = "events_extra";
     public static final String CATEGORIES_EXTRA = "categories_extra";
     public static final String LOCATION_EXTRA = "location_extra";
+
+    // Tag for the view events fragment
+    public static final String VIEW_EVENTS_TAG = "view_events_tag";
 
     /**
      * The {@link SlidingUpPanelLayout} that will show details about an event.
@@ -59,24 +53,6 @@ public class ViewEventsActivity extends ActionBarActivity implements ViewListEve
     @InjectView(R.id.sliding_layout)
     SlidingUpPanelLayout mDetailsPanelLayout;
 
-    /**
-     * The {@link ViewPager} that will host the section contents.
-     */
-    @InjectView(R.id.pager)
-    ViewPager mViewPager;
-
-    /**
-     * The {@link SlidingTabLayout} for tab indication.
-     */
-    @InjectView(R.id.sliding_tabs)
-    SlidingTabLayout mSlidingTabLayout;
-    /**
-     * The {@link android.support.v4.view.PagerAdapter} that will provide
-     * fragments for each of the sections.
-     */
-    ImagePagerAdapter mSectionsPagerAdapter;
-
-    // Views
     @InjectView(R.id.main_toolbar)
     Toolbar mToolbar;
     @InjectView(R.id.view_event_detail_title)
@@ -91,12 +67,6 @@ public class ViewEventsActivity extends ActionBarActivity implements ViewListEve
     ListView mDrawerList;
     @InjectView(R.id.view_event_detail_thumb)
     ImageView mEventThumb;
-    @InjectView(R.id.details_btn_view)
-    LinearLayout mButtonView;
-    @InjectView(R.id.details_next_btn)
-    Button mNextButton;
-    @InjectView(R.id.details_prev_btn)
-    Button mPreviousButton;
 
     private ArrayList<Event> mEvents;
     private ArrayList<Category> mCategories;
@@ -116,16 +86,6 @@ public class ViewEventsActivity extends ActionBarActivity implements ViewListEve
         setSupportActionBar(mToolbar);
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, R.string.app_name, R.string.app_name);
         mDrawerLayout.setDrawerListener(mDrawerToggle);
-
-        // Create the adapter that will return a fragment for each of the three
-        // primary sections of the activity.
-        mSectionsPagerAdapter = new ImagePagerAdapter(getFragmentManager());
-
-        // Set up the ViewPager with the sections adapter.
-        mViewPager.setAdapter(mSectionsPagerAdapter);
-        mSlidingTabLayout.setSelectedIndicatorColors(getResources().getColor(R.color.light_orange));
-        mSlidingTabLayout.setCustomTabView(R.layout.tab_item, 0, R.id.tab_item_img);
-        mSlidingTabLayout.setViewPager(mViewPager);
 
         // Get the events from extra
         mEvents = getIntent().getParcelableArrayListExtra(EVENTS_EXTRA);
@@ -150,14 +110,14 @@ public class ViewEventsActivity extends ActionBarActivity implements ViewListEve
 
             @Override
             public void onPanelCollapsed(View view) {
-                mButtonView.setVisibility(View.GONE);
-                mSlidingTabLayout.setVisibility(View.VISIBLE);
+                ViewEventsFragment viewEventsFragment = (ViewEventsFragment) getFragmentManager().findFragmentByTag(VIEW_EVENTS_TAG);
+                viewEventsFragment.onHideEventDetail();
             }
 
             @Override
             public void onPanelExpanded(View view) {
-                mButtonView.setVisibility(View.VISIBLE);
-                mSlidingTabLayout.setVisibility(View.GONE);
+                ViewEventsFragment viewEventsFragment = (ViewEventsFragment) getFragmentManager().findFragmentByTag(VIEW_EVENTS_TAG);
+                viewEventsFragment.onViewEventDetail();
             }
 
             @Override
@@ -169,18 +129,9 @@ public class ViewEventsActivity extends ActionBarActivity implements ViewListEve
             }
         });
 
-    }
-
-    @OnClick(R.id.details_next_btn)
-    public void onNextButtonClicked() {
-        int idx = mEvents.indexOf(mCurrentEvent);
-        viewEvent(mEvents.get((idx + 1) >= mEvents.size() ? 0 : idx + 1));
-    }
-
-    @OnClick(R.id.details_prev_btn)
-    public void onPreviousButtonClicked() {
-        int idx = mEvents.indexOf(mCurrentEvent);
-        viewEvent(mEvents.get((idx - 1) <= 0 ? mEvents.size() - 1 : idx - 1));
+        // Start view events fragment
+        getFragmentManager().beginTransaction().replace(R.id.fragment_container, ViewEventsFragment.newInstance(mEvents, mCategories,
+                new Event.Location(mLatestLocation.getLatitude(), mLatestLocation.getLongitude())), VIEW_EVENTS_TAG).addToBackStack(null).commit();
     }
 
     @Override
@@ -216,6 +167,7 @@ public class ViewEventsActivity extends ActionBarActivity implements ViewListEve
         }
         int id = item.getItemId();
         if (id == R.id.action_login) {
+            LogHelper.logInfo("Action login clicked");
             getFragmentManager().beginTransaction().replace(R.id.fragment_container, LoginFragment.newInstance())
                     .addToBackStack(null).commit();
             return true;
@@ -247,12 +199,6 @@ public class ViewEventsActivity extends ActionBarActivity implements ViewListEve
         }
     }
 
-    // Layout has changed from map to list, or vice versa
-    @Override
-    public void onLayoutChange(ViewEventsFragment.ViewType type) {
-        mDetailsPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
-    }
-
     // Clicking an event in list view
     @Override
     public void onListEventClick(Event event) {
@@ -273,6 +219,19 @@ public class ViewEventsActivity extends ActionBarActivity implements ViewListEve
         mDetailsPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
     }
 
+    // From the ViewEventsFragment
+    @Override
+    public void viewNextEvent() {
+        int idx = mEvents.indexOf(mCurrentEvent);
+        viewEvent(mEvents.get((idx + 1) >= mEvents.size() ? 0 : idx + 1));
+    }
+
+    @Override
+    public void viewPreviousEvent() {
+        int idx = mEvents.indexOf(mCurrentEvent);
+        viewEvent(mEvents.get((idx - 1) <= 0 ? mEvents.size() - 1 : idx - 1));
+    }
+
     private void viewEvent(Event event) {
         mCurrentEvent = event;
         Picasso.with(this).load(GeoMarketServiceApiBuilder.HOST + event.getImageSmallUrl()).into(mEventThumb);
@@ -289,57 +248,4 @@ public class ViewEventsActivity extends ActionBarActivity implements ViewListEve
                 R.id.view_event_fragment, ViewEventDetailsFragment.newInstance(event)).commit();
     }
 
-    /**
-     * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
-     * one of the sections/tabs/pages.
-     */
-    public class ImagePagerAdapter extends FragmentPagerAdapter {
-
-        public ImagePagerAdapter(FragmentManager fm) {
-            super(fm);
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            // getItem is called to instantiate the fragment for the given page.
-            // Return a PlaceholderFragment (defined as a static inner class below).
-            switch (position) {
-                case 0:
-                    return MapEventsFragment.newInstance(mEvents, mCategories,
-                            new Event.Location(mLatestLocation.getLatitude(), mLatestLocation.getLongitude()));
-
-                case 1:
-                    return ViewListEventsFragment.newInstance(mEvents);
-            }
-            LogHelper.logError("Something is terribly wrong, got tab position " + position);
-            return null;
-        }
-
-        @Override
-        public int getCount() {
-            // Show 2 total pages.
-            return 2;
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            switch (position) {
-                case 0:
-                    return getString(R.string.title_fragment_view_map_events).toUpperCase();
-                case 1:
-                    return getString(R.string.title_fragment_view_list_events).toUpperCase();
-            }
-            return null;
-        }
-
-        public Drawable getPageDrawable(int position) {
-            switch (position) {
-                case 0:
-                    return getResources().getDrawable(R.drawable.ic_action_icon_map);
-                case 1:
-                    return getResources().getDrawable(R.drawable.ic_action_icon_list);
-            }
-            return null;
-        }
-    }
 }

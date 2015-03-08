@@ -16,42 +16,6 @@
             android:background="@drawable/toolbar_bg"
             android:theme="@style/ActionBar" />
 
-        <LinearLayout
-            android:id="@+id/details_btn_view"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="@drawable/sub_toolbar_bg"
-            android:orientation="horizontal"
-            android:visibility="gone">
-
-            <Button
-                android:id="@+id/details_prev_btn"
-                style="@style/NavButton"
-                android:drawableLeft="@drawable/ic_triangle_left"
-                android:paddingLeft="24dp"
-                android:drawablePadding="-24dp"
-                android:text="@string/details_previous" />
-
-            <View
-                style="@style/Divider"
-                android:layout_height="28dp" />
-
-            <Button
-                android:id="@+id/details_next_btn"
-                style="@style/NavButton"
-                android:drawableRight="@drawable/ic_triangle_right"
-                android:paddingRight="24dp"
-                android:drawablePadding="-24dp"
-                android:text="@string/details_next" />
-        </LinearLayout>
-
-        <com.geomarket.android.view.SlidingTabLayout
-            android:id="@+id/sliding_tabs"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:theme="@style/PagerTitleStrip" />
-
-
         <com.sothree.slidinguppanel.SlidingUpPanelLayout xmlns:sothree="http://schemas.android.com/apk/res-auto"
             android:id="@+id/sliding_layout"
             android:layout_width="match_parent"
@@ -69,16 +33,10 @@
                 android:layout_height="match_parent"
                 android:orientation="vertical">
 
-                <android.support.v4.view.ViewPager
-                    android:id="@+id/pager"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"></android.support.v4.view.ViewPager>
-
                 <FrameLayout
                     android:id="@+id/fragment_container"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="?attr/actionBarSize" />
+                    android:layout_height="match_parent" />
             </LinearLayout>
 
             <!-- Sliding layout -->
