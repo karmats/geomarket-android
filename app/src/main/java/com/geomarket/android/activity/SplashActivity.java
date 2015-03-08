@@ -33,6 +33,7 @@ import butterknife.InjectView;
 
 public class SplashActivity extends Activity {
     private static final String DEFAULT_LANGUAGE = "SE";
+    private static final String DEFAULT_COUNTRY = "SWE";
 
     private ArrayList<Event> mEvents;
     private ArrayList<Category> mCategories;
@@ -52,7 +53,8 @@ public class SplashActivity extends Activity {
         mInitText.setText(getString(R.string.init_initializing));
         // Get the language id we use in all api calls
         final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        final String languageId = preferences.getString(Language.PREF_LANGUAGE_ID, "");
+        // TODO Uncomment when having something stable
+        final String languageId = "";//preferences.getString(Language.PREF_LANGUAGE_ID, "");
         if (!languageId.isEmpty()) {
             fetchCategoriesAndEvents();
         } else {
@@ -63,7 +65,7 @@ public class SplashActivity extends Activity {
                     String languageId = null;
                     String defaultLang = Locale.getDefault().getLanguage();
                     for (Language lang : result) {
-                        if ((DEFAULT_LANGUAGE.equalsIgnoreCase(lang.getShortName()) && languageId == null)
+                        if (((DEFAULT_LANGUAGE.equalsIgnoreCase(lang.getShortName()) || DEFAULT_COUNTRY.equalsIgnoreCase(lang.getShortName())) && languageId == null)
                                 || defaultLang.equalsIgnoreCase(lang.getShortName())) {
                             languageId = lang.getId();
                         }

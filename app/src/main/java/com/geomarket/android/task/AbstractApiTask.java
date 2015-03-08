@@ -69,11 +69,7 @@ public abstract class AbstractApiTask<P, R> extends AsyncTask<P, Void, ApiResult
                 message.append("Unexpected error");
                 break;
         }
-        message.append("\n").append("Message: ").append(e.getMessage());
-        message.append("\n").append("Cause: ").append(e.getCause() != null ? e.getCause().getMessage() : "No cause");
         message.append("\n").append("Expected type: ").append(e.getSuccessType());
-        message.append("\n").append("Body: ").append(e.getBody());
-        message.append("\n").append("Url: ").append(e.getUrl());
         // Log it
         LogHelper.logException(e);
         ApiResult<R> result = new ApiResult<>();
