@@ -17,6 +17,7 @@ import com.facebook.Request;
 import com.facebook.Response;
 import com.facebook.Session;
 import com.facebook.SessionState;
+import com.facebook.UiLifecycleHelper;
 import com.facebook.model.GraphUser;
 import com.facebook.widget.LoginButton;
 import com.geomarket.android.R;
@@ -43,6 +44,9 @@ public class LoginFragment extends Fragment implements GoogleApiClient.Connectio
 
     // Client used to interact with Google APIs.
     private GoogleApiClient mGoogleApiClient;
+
+    // Needed for facebook login
+    private UiLifecycleHelper uiHelper;
 
     /* A flag indicating that a PendingIntent is in progress and prevents
      * us from starting further intents.
@@ -75,6 +79,9 @@ public class LoginFragment extends Fragment implements GoogleApiClient.Connectio
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // Facebook UI lifecycle helper
+        uiHelper = new UiLifecycleHelper(getActivity(), this);
+        uiHelper.onCreate(savedInstanceState);
         // Initialize the PlusClient connection.
         // Scopes indicate the information about the user your application will be able to access.
         mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
@@ -91,9 +98,10 @@ public class LoginFragment extends Fragment implements GoogleApiClient.Connectio
         View v = inflater.inflate(R.layout.fragment_login, container, false);
         ButterKnife.inject(this, v);
         mFacebookLoginButton.setFragment(this);
+        mFacebookLoginButton.setReadPermissions("public_profile");
+        mFacebookLoginButton.setSessionStatusCallback(this);
 
         if (supportsGooglePlayServices()) {
-            updateUserInfo();
             // Set a listener to connect the user when the G+ button is clicked.
             mPlusSignInButton.setOnClickListener(new OnClickListener() {
                 @Override
@@ -109,19 +117,8 @@ public class LoginFragment extends Fragment implements GoogleApiClient.Connectio
             // Services.
             mPlusSignInButton.setVisibility(View.GONE);
         }
+        updateUserInfo();
         return v;
-    }
-
-    @OnClick(R.id.facebook_sign_in_button)
-    public void onFacebookClickLogin() {
-        Session session = Session.getActiveSession();
-        if (!session.isOpened() && !session.isClosed()) {
-            session.openForRead(new Session.OpenRequest(this)
-                    .setPermissions("public_profile")
-                    .setCallback(LoginFragment.this));
-        } else {
-            Session.openActiveSession(getActivity(), this, true, LoginFragment.this);
-        }
     }
 
     @Override
@@ -140,11 +137,13 @@ public class LoginFragment extends Fragment implements GoogleApiClient.Connectio
 
     @Override
     public void onActivityResult(int requestCode, int responseCode, Intent intent) {
+        LogHelper.logInfo("On activity result!" + intent.getAction());
         if (requestCode == RC_SIGN_IN) {
             if (!mGoogleApiClient.isConnecting()) {
                 mGoogleApiClient.connect();
             }
         }
+        uiHelper.onActivityResult(requestCode, responseCode, intent);
     }
 
     /**
@@ -192,6 +191,7 @@ public class LoginFragment extends Fragment implements GoogleApiClient.Connectio
     }
 
 
+    // Callback for facebook button
     @Override
     public void call(Session session, SessionState sessionState, Exception e) {
         LogHelper.logInfo("Session state open? " + sessionState.isOpened() + " Session: " + session);
@@ -235,17 +235,13 @@ public class LoginFragment extends Fragment implements GoogleApiClient.Connectio
 
     private void updateUserInfo() {
         Session session = Session.getActiveSession();
-        if (session != null && session.isOpened()) {
-            LogHelper.logInfo("Session not null getting user info");
+        if (session != null && session.getState().isOpened()) {
             // Request user data and show the results
             Request.newMeRequest(session, new Request.GraphUserCallback() {
 
                 @Override
                 public void onCompleted(GraphUser user, Response response) {
-                    LogHelper.logInfo("Complete!");
-                    LogHelper.logInfo("Response is: " + response.getRawResponse());
                     if (user != null) {
-                        LogHelper.logInfo("User not null omg, " + user.getFirstName());
                         mUserInfoView.setVisibility(View.VISIBLE);
                         mPlusSignInButton.setVisibility(View.GONE);
                         // Display the parsed user info
@@ -279,6 +275,29 @@ public class LoginFragment extends Fragment implements GoogleApiClient.Connectio
                 ConnectionResult.SUCCESS;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        uiHelper.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        uiHelper.onPause();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        uiHelper.onDestroy();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        uiHelper.onSaveInstanceState(outState);
+    }
 }
 
 
