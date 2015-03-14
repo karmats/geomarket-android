@@ -1,15 +1,15 @@
 package com.geomarket.android.api.service;
 
 import com.geomarket.android.api.ApiResult;
-import com.geomarket.android.api.AuthenticatedUser;
 import com.geomarket.android.api.Category;
 import com.geomarket.android.api.Event;
 import com.geomarket.android.api.Language;
+import com.geomarket.android.api.User;
 
 import java.util.List;
 
+import retrofit.http.Body;
 import retrofit.http.GET;
-import retrofit.http.Header;
 import retrofit.http.POST;
 import retrofit.http.Path;
 import retrofit.http.Query;
@@ -24,7 +24,7 @@ public interface GeoMarketServiceApi {
     static final String CATEGORIES_SVC_PATH = BASE_SVC_PATH + "/categories";
     static final String CATEGORIES_BY_LANGUAGE_SVC_PATH = BASE_SVC_PATH + "/categories/language/{langId}";
     static final String LANGUAGES_SVC_PATH = BASE_SVC_PATH + "/languages";
-    static final String AUTH_SVC_PATH = BASE_SVC_PATH + "/auth";
+    static final String CREATE_USER_PATH = BASE_SVC_PATH + "/users";
 
     // Event parameters
     static final String RADIUS_PARAM = "radius";
@@ -75,12 +75,10 @@ public interface GeoMarketServiceApi {
     ApiResult<List<Language>> getLanguages();
 
     /**
-     * Authenticates a user.
+     * Creates a new user. This is a one time operation in Dibbler
      *
-     * @param authService The service. Possible values google, facebook
-     * @param authToken   The one time token gotten from google or facebook server
-     * @return
+     * @return The created User
      */
-    @POST(AUTH_SVC_PATH)
-    public AuthenticatedUser authenticate(@Query(AUTH_SERVICE_PARAM) String authService, @Header(AUTH_TOKEN_HEADER) String authToken);
+    @POST(CREATE_USER_PATH)
+    ApiResult<User> createNewUser(@Body User user);
 }
