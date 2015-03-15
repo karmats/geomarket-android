@@ -1,5 +1,6 @@
 package com.geomarket.android.activity;
 
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.location.Location;
 import android.os.Bundle;
@@ -43,9 +44,6 @@ public class MainActivity extends ActionBarActivity implements ViewListEventsFra
     public static final String EVENTS_EXTRA = "events_extra";
     public static final String CATEGORIES_EXTRA = "categories_extra";
     public static final String LOCATION_EXTRA = "location_extra";
-
-    // Tag for the view events fragment
-    public static final String VIEW_EVENTS_TAG = "view_events_tag";
 
     /**
      * The {@link SlidingUpPanelLayout} that will show details about an event.
@@ -110,13 +108,13 @@ public class MainActivity extends ActionBarActivity implements ViewListEventsFra
 
             @Override
             public void onPanelCollapsed(View view) {
-                ViewEventsFragment viewEventsFragment = (ViewEventsFragment) getSupportFragmentManager().findFragmentByTag(VIEW_EVENTS_TAG);
+                ViewEventsFragment viewEventsFragment = (ViewEventsFragment) getSupportFragmentManager().findFragmentByTag(ViewEventsFragment.TAG_NAME);
                 viewEventsFragment.onHideEventDetail();
             }
 
             @Override
             public void onPanelExpanded(View view) {
-                ViewEventsFragment viewEventsFragment = (ViewEventsFragment) getSupportFragmentManager().findFragmentByTag(VIEW_EVENTS_TAG);
+                ViewEventsFragment viewEventsFragment = (ViewEventsFragment) getSupportFragmentManager().findFragmentByTag(ViewEventsFragment.TAG_NAME);
                 viewEventsFragment.onViewEventDetail();
             }
 
@@ -130,8 +128,9 @@ public class MainActivity extends ActionBarActivity implements ViewListEventsFra
         });
 
         // Start view events fragment
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, ViewEventsFragment.newInstance(mEvents, mCategories,
-                new Event.Location(mLatestLocation.getLatitude(), mLatestLocation.getLongitude())), VIEW_EVENTS_TAG).addToBackStack(null).commit();
+        ViewEventsFragment viewEventsFragment = ViewEventsFragment.newInstance(mEvents, mCategories,
+                new Event.Location(mLatestLocation.getLatitude(), mLatestLocation.getLongitude()));
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, viewEventsFragment, ViewEventsFragment.TAG_NAME).addToBackStack(null).commit();
     }
 
     @Override
@@ -168,7 +167,7 @@ public class MainActivity extends ActionBarActivity implements ViewListEventsFra
         int id = item.getItemId();
         if (id == R.id.action_login) {
             LogHelper.logInfo("Action login clicked");
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, LoginFragment.newInstance())
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, LoginFragment.newInstance(), LoginFragment.TAG_NAME)
                     .addToBackStack(null).commit();
             return true;
         }
@@ -230,6 +229,17 @@ public class MainActivity extends ActionBarActivity implements ViewListEventsFra
     public void viewPreviousEvent() {
         int idx = mEvents.indexOf(mCurrentEvent);
         viewEvent(mEvents.get((idx - 1) <= 0 ? mEvents.size() - 1 : idx - 1));
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == LoginFragment.RC_SIGN_IN) {
+            LoginFragment fragment = (LoginFragment) getSupportFragmentManager()
+                    .findFragmentByTag(LoginFragment.TAG_NAME);
+            fragment.onActivityResult(requestCode, resultCode, data);
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
     }
 
     private void viewEvent(Event event) {

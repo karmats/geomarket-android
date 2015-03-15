@@ -26,6 +26,8 @@ import butterknife.InjectView;
 import butterknife.OnClick;
 
 public class ViewEventsFragment extends Fragment {
+    public static final String TAG_NAME = "view_events_fragment_tag";
+
     private static final String EVENTS_PARAM = "events_param";
     private static final String CATEGORIES_PARAM = "categories_param";
     private static final String LOCATION_PARAM = "location_param";

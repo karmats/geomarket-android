@@ -1,6 +1,7 @@
 package com.geomarket.android.api.service;
 
 import com.geomarket.android.api.ApiResult;
+import com.geomarket.android.api.AuthUser;
 import com.geomarket.android.api.Category;
 import com.geomarket.android.api.Event;
 import com.geomarket.android.api.Language;
@@ -25,16 +26,13 @@ public interface GeoMarketServiceApi {
     static final String CATEGORIES_BY_LANGUAGE_SVC_PATH = BASE_SVC_PATH + "/categories/language/{langId}";
     static final String LANGUAGES_SVC_PATH = BASE_SVC_PATH + "/languages";
     static final String CREATE_USER_PATH = BASE_SVC_PATH + "/users";
+    static final String AUTHENTICATE_USER_PATH = BASE_SVC_PATH + "/users/authenticate";
 
     // Event parameters
     static final String RADIUS_PARAM = "radius";
     static final String LAT_PARAM = "latitude";
     static final String LON_PARAM = "longitude";
     static final String LANG_PARAM = "language";
-
-    // Authenticate parameters
-    static final String AUTH_SERVICE_PARAM = "authService";
-    static final String AUTH_TOKEN_HEADER = "Auth-Token";
 
     /**
      * Gets all events near a specific location.
@@ -77,8 +75,17 @@ public interface GeoMarketServiceApi {
     /**
      * Creates a new user. This is a one time operation in Dibbler
      *
-     * @return The created User
+     * @return The id of the created User
      */
     @POST(CREATE_USER_PATH)
-    ApiResult<User> createNewUser(@Body User user);
+    ApiResult<String> createNewUser(@Body User user);
+
+    /**
+     * Authenticates a user to
+     *
+     * @param authUser The user to authenticate
+     * @return A User object
+     */
+    @POST(AUTHENTICATE_USER_PATH)
+    ApiResult<User> authenticateUser(@Body AuthUser authUser);
 }

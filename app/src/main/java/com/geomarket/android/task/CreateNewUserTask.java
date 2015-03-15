@@ -8,9 +8,9 @@ import retrofit.RetrofitError;
 /**
  * Creates a new dibbler user
  * <p/>
- * User can be created via facebook or google
+ * User can also be created via facebook or google
  */
-public class CreateNewUserTask extends AbstractApiTask<Void, User> {
+public class CreateNewUserTask extends AbstractApiTask<Void, String> {
 
     private User user;
 
@@ -18,13 +18,13 @@ public class CreateNewUserTask extends AbstractApiTask<Void, User> {
      * @param callback
      * @param user     The user to create
      */
-    public CreateNewUserTask(ApiCallback<User> callback, User user) {
+    public CreateNewUserTask(ApiCallback<String> callback, User user) {
         super(callback);
         this.user = user;
     }
 
     @Override
-    ApiResult<User> fetchFromServer(Void... params) throws RetrofitError {
+    ApiResult<String> fetchFromServer(Void... params) throws RetrofitError {
         return mApi.createNewUser(user);
     }
 

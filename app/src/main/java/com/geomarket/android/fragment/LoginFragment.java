@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -11,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.facebook.Request;
@@ -21,6 +23,7 @@ import com.facebook.UiLifecycleHelper;
 import com.facebook.model.GraphUser;
 import com.facebook.widget.LoginButton;
 import com.geomarket.android.R;
+import com.geomarket.android.api.User;
 import com.geomarket.android.util.LogHelper;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -39,25 +42,36 @@ import butterknife.OnClick;
  */
 public class LoginFragment extends Fragment implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, Session.StatusCallback {
 
+    // Fragment tag name
+    public static final String TAG_NAME = "login_fragment_tag";
     // A magic number we will use to know that our sign-in error resolution activity has completed
-    private static final int RC_SIGN_IN = 49404;
+    public static final int RC_SIGN_IN = 49404;
 
     // Client used to interact with Google APIs.
     private GoogleApiClient mGoogleApiClient;
 
+    /* Track whether the sign-in button has been clicked so that we know to resolve
+     * all issues preventing sign-in without waiting.
+     */
+    private boolean mSignInClicked;
+
+    private boolean mIntentInProgress;
+
+    /* Store the connection result from onConnectionFailed callbacks so that we can
+     * resolve them when the user clicks sign-in.
+     */
+    private ConnectionResult mConnectionResult;
+
     // Needed for facebook login
     private UiLifecycleHelper uiHelper;
-
-    /* A flag indicating that a PendingIntent is in progress and prevents
-     * us from starting further intents.
-     */
-    private boolean mIntentInProgress;
 
     // UI references.
     @InjectView(R.id.login_progress)
     View mProgressView;
     @InjectView((R.id.plus_sign_in_button))
     SignInButton mPlusSignInButton;
+    @InjectView(R.id.plus_sign_out_button)
+    Button mPlusSignOutButton;
     @InjectView(R.id.facebook_sign_in_button)
     LoginButton mFacebookLoginButton;
     @InjectView(R.id.login_form)
@@ -70,6 +84,8 @@ public class LoginFragment extends Fragment implements GoogleApiClient.Connectio
     TextView mUserInfoId;
     @InjectView(R.id.user_info_gender)
     TextView mUserInfoGender;
+    @InjectView(R.id.user_info_email)
+    TextView mUserInfoEmail;
 
     public static LoginFragment newInstance() {
         return new LoginFragment();
@@ -88,7 +104,7 @@ public class LoginFragment extends Fragment implements GoogleApiClient.Connectio
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .addApi(Plus.API)
-                .addScope(Plus.SCOPE_PLUS_LOGIN)
+                .addScope(Plus.SCOPE_PLUS_PROFILE)
                 .build();
 
     }
@@ -96,9 +112,11 @@ public class LoginFragment extends Fragment implements GoogleApiClient.Connectio
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_login, container, false);
+
         ButterKnife.inject(this, v);
+
         mFacebookLoginButton.setFragment(this);
-        mFacebookLoginButton.setReadPermissions("public_profile");
+        mFacebookLoginButton.setReadPermissions("public_profile", "email");
         mFacebookLoginButton.setSessionStatusCallback(this);
 
         if (supportsGooglePlayServices()) {
@@ -109,6 +127,8 @@ public class LoginFragment extends Fragment implements GoogleApiClient.Connectio
                     if (!mGoogleApiClient.isConnected()) {
                         // Show the dialog as we are now signing in.
                         showProgress(true);
+                        mSignInClicked = true;
+                        resolveSignInError();
                     }
                 }
             });
@@ -117,7 +137,7 @@ public class LoginFragment extends Fragment implements GoogleApiClient.Connectio
             // Services.
             mPlusSignInButton.setVisibility(View.GONE);
         }
-        updateUserInfo();
+        retrieveUserInfo();
         return v;
     }
 
@@ -135,9 +155,42 @@ public class LoginFragment extends Fragment implements GoogleApiClient.Connectio
         }
     }
 
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        uiHelper.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        uiHelper.onPause();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        uiHelper.onDestroy();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        uiHelper.onSaveInstanceState(outState);
+    }
+
+    @OnClick(R.id.plus_sign_out_button)
+    public void onPlusSignOut() {
+        if (mGoogleApiClient.isConnected()) {
+            Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
+            mGoogleApiClient.disconnect();
+            mGoogleApiClient.connect();
+        }
+    }
+
     @Override
     public void onActivityResult(int requestCode, int responseCode, Intent intent) {
-        LogHelper.logInfo("On activity result!" + intent.getAction());
         if (requestCode == RC_SIGN_IN) {
             if (!mGoogleApiClient.isConnecting()) {
                 mGoogleApiClient.connect();
@@ -152,30 +205,7 @@ public class LoginFragment extends Fragment implements GoogleApiClient.Connectio
     @Override
     public void onConnected(Bundle connectionHint) {
         showProgress(false);
-        updateUserInfo();
-    }
-
-    /**
-     * Connection failed for some reason (called by PlusClient)
-     * Try and resolve the result.  Failure here is usually not an indication of a serious error,
-     * just that the user's input is needed.
-     *
-     * @see #onActivityResult(int, int, Intent)
-     */
-    @Override
-    public void onConnectionFailed(ConnectionResult result) {
-        if (!mIntentInProgress && result.hasResolution()) {
-            //try {
-            mIntentInProgress = true;
-                /*startIntentSenderForResult(result.getResolution().getIntentSender(),
-                        RC_SIGN_IN, null, 0, 0, 0);*/
-            /*} catch (IntentSender.SendIntentException e) {
-                // The intent was canceled before it was sent.  Return to the default
-                // state and attempt to connect to get an updated ConnectionResult.
-                mIntentInProgress = false;
-                mGoogleApiClient.connect();
-            }*/
-        }
+        retrieveUserInfo();
     }
 
     /**
@@ -194,9 +224,8 @@ public class LoginFragment extends Fragment implements GoogleApiClient.Connectio
     // Callback for facebook button
     @Override
     public void call(Session session, SessionState sessionState, Exception e) {
-        LogHelper.logInfo("Session state open? " + sessionState.isOpened() + " Session: " + session);
         if (sessionState.isOpened()) {
-            updateUserInfo();
+            retrieveUserInfo();
         }
     }
 
@@ -233,7 +262,45 @@ public class LoginFragment extends Fragment implements GoogleApiClient.Connectio
         }
     }
 
-    private void updateUserInfo() {
+    /**
+     * Connection failed for some reason (called by PlusClient)
+     * Try and resolve the result.  Failure here is usually not an indication of a serious error,
+     * just that the user's input is needed.
+     *
+     * @see #onActivityResult(int, int, Intent)
+     */
+    public void onConnectionFailed(ConnectionResult result) {
+        if (!mIntentInProgress) {
+            // Store the ConnectionResult so that we can use it later when the user clicks
+            // 'sign-in'.
+            mConnectionResult = result;
+
+            if (mSignInClicked) {
+                // The user has already clicked 'sign-in' so we attempt to resolve all
+                // errors until the user is signed in, or they cancel.
+                resolveSignInError();
+            }
+        }
+    }
+
+    // Try to resolve sign in error when signing up via google+
+    private void resolveSignInError() {
+        if (mConnectionResult.hasResolution()) {
+            try {
+                mIntentInProgress = true;
+                getActivity().startIntentSenderForResult(mConnectionResult.getResolution().getIntentSender(),
+                        RC_SIGN_IN, null, 0, 0, 0);
+            } catch (IntentSender.SendIntentException e) {
+                // The intent was canceled before it was sent.  Return to the default
+                // state and attempt to connect to get an updated ConnectionResult.
+                mIntentInProgress = false;
+                mGoogleApiClient.connect();
+            }
+        }
+    }
+
+    // Retrieves user information from google or facebook
+    private void retrieveUserInfo() {
         Session session = Session.getActiveSession();
         if (session != null && session.getState().isOpened()) {
             // Request user data and show the results
@@ -242,26 +309,31 @@ public class LoginFragment extends Fragment implements GoogleApiClient.Connectio
                 @Override
                 public void onCompleted(GraphUser user, Response response) {
                     if (user != null) {
-                        mUserInfoView.setVisibility(View.VISIBLE);
-                        mPlusSignInButton.setVisibility(View.GONE);
-                        // Display the parsed user info
-                        mUserInfoName.setText(user.getFirstName() + " " + user.getLastName());
-                        mUserInfoGender.setText((String) user.asMap().get("gender"));
-                        mUserInfoId.setText(user.getId());
+                        createUser(User.fromFacebookUser(user));
                     }
                 }
             }).executeAsync();
         } else if (mGoogleApiClient.isConnected()) {
             mUserInfoView.setVisibility(View.VISIBLE);
             mPlusSignInButton.setVisibility(View.GONE);
-            Person loggedInUser = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient);
-            mUserInfoName.setText(loggedInUser.getDisplayName());
-            mUserInfoGender.setText(loggedInUser.getGender() == Person.Gender.FEMALE ? "Female" : "Male");
-            mUserInfoId.setText(loggedInUser.getId());
+            mPlusSignOutButton.setVisibility(View.VISIBLE);
+
+            Person gUser = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient);
+            String email = Plus.AccountApi.getAccountName(mGoogleApiClient);
+            createUser(User.fromGoogleUser(gUser, email));
         } else {
             mUserInfoView.setVisibility(View.GONE);
             mPlusSignInButton.setVisibility(View.VISIBLE);
         }
+    }
+
+    private void createUser(User user) {
+        mUserInfoView.setVisibility(View.VISIBLE);
+        // TODO Execute CreateNewUserTask
+        mUserInfoEmail.setText(user.getEmail());
+        mUserInfoName.setText(user.getDisplayName());
+        mUserInfoGender.setText(user.getGender());
+        mUserInfoId.setText(user.getFacebookId() != null ? user.getFacebookId() : user.getGoogleId());
     }
 
     /**
@@ -274,31 +346,4 @@ public class LoginFragment extends Fragment implements GoogleApiClient.Connectio
         return GooglePlayServicesUtil.isGooglePlayServicesAvailable(getActivity()) ==
                 ConnectionResult.SUCCESS;
     }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        uiHelper.onResume();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        uiHelper.onPause();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        uiHelper.onDestroy();
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        uiHelper.onSaveInstanceState(outState);
-    }
 }
-
-
-

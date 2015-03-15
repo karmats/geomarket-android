@@ -79,7 +79,8 @@ public class SplashActivity extends Activity {
                 public void onFailure(String error) {
                     // Couldn't get language, stop the application
                     Toast.makeText(SplashActivity.this, error, Toast.LENGTH_LONG).show();
-                    finish();
+                    //finish();
+                    fetchCategoriesAndEvents();
                 }
             }).execute();
         }
@@ -90,12 +91,12 @@ public class SplashActivity extends Activity {
         // Fetch events near user
         mInitText.setText(getString(R.string.init_fetch_position));
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        mLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+        mLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         if (mLocation != null) {
             buildFetchEventsTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, mLocation);
         } else {
             // No last known location found, request for it
-            locationManager.requestSingleUpdate(LocationManager.NETWORK_PROVIDER, new LocationListener() {
+            locationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, new LocationListener() {
                 @Override
                 public void onLocationChanged(Location location) {
                     mLocation = location;
