@@ -29,4 +29,5 @@ dependencies {
     compile 'com.sothree.slidinguppanel:library:+'
     compile 'com.squareup.picasso:picasso:+'
     compile 'com.facebook.android:facebook-android-sdk:3.21.1'
+    compile 'com.astuetz:pagerslidingtabstrip:1.0.1'
 }

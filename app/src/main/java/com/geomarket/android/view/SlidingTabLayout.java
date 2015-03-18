@@ -224,7 +224,7 @@ public class SlidingTabLayout extends HorizontalScrollView {
             if (TextView.class.isInstance((tabTitleView))) {
                 ((TextView) tabTitleView).setText(adapter.getPageTitle(i));
             } else {
-                ((ImageView) tabTitleView).setImageDrawable(((ViewEventsFragment.ImagePagerAdapter) adapter).getPageDrawable(i));
+                //((ImageView) tabTitleView).setImageDrawable(((ViewEventsFragment.ImagePagerAdapter) adapter).getPageDrawable(i));
             }
             tabView.setOnClickListener(tabClickListener);
 

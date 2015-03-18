@@ -1,10 +1,10 @@
 package com.geomarket.android.fragment;
 
 import android.app.Activity;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
@@ -13,11 +13,11 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
+import com.astuetz.PagerSlidingTabStrip;
 import com.geomarket.android.R;
 import com.geomarket.android.api.Category;
 import com.geomarket.android.api.Event;
 import com.geomarket.android.util.LogHelper;
-import com.geomarket.android.view.SlidingTabLayout;
 
 import java.util.ArrayList;
 
@@ -48,8 +48,8 @@ public class ViewEventsFragment extends Fragment {
     /**
      * The {@link com.geomarket.android.view.SlidingTabLayout} for tab indication.
      */
-    @InjectView(R.id.sliding_tabs)
-    SlidingTabLayout mSlidingTabLayout;
+    @InjectView(R.id.sliding_tab_strip)
+    PagerSlidingTabStrip mPagerSlidingTabStrip;
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -97,9 +97,10 @@ public class ViewEventsFragment extends Fragment {
 
         // Set up the ViewPager with the sections adapter.
         mViewPager.setAdapter(mSectionsPagerAdapter);
-        mSlidingTabLayout.setSelectedIndicatorColors(getResources().getColor(R.color.light_orange));
-        mSlidingTabLayout.setCustomTabView(R.layout.tab_item, 0, R.id.tab_item_img);
-        mSlidingTabLayout.setViewPager(mViewPager);
+        mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener());
+        /*mPagerSlidingTabStrip.setSelectedIndicatorColors(getResources().getColor(R.color.light_orange));
+        mPagerSlidingTabStrip.setCustomTabView(R.layout.tab_item, 0, R.id.tab_item_img);*/
+        mPagerSlidingTabStrip.setViewPager(mViewPager);
 
         return v;
     }
@@ -118,12 +119,12 @@ public class ViewEventsFragment extends Fragment {
     // Called from main activity
     public void onViewEventDetail() {
         mButtonView.setVisibility(View.VISIBLE);
-        mSlidingTabLayout.setVisibility(View.GONE);
+        mPagerSlidingTabStrip.setVisibility(View.GONE);
     }
 
     public void onHideEventDetail() {
         mButtonView.setVisibility(View.GONE);
-        mSlidingTabLayout.setVisibility(View.VISIBLE);
+        mPagerSlidingTabStrip.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -148,7 +149,7 @@ public class ViewEventsFragment extends Fragment {
      * A {@link android.support.v13.app.FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.
      */
-    public class ImagePagerAdapter extends FragmentPagerAdapter {
+    public class ImagePagerAdapter extends FragmentPagerAdapter implements PagerSlidingTabStrip.IconTabProvider {
 
         public ImagePagerAdapter(FragmentManager fm) {
             super(fm);
@@ -187,14 +188,15 @@ public class ViewEventsFragment extends Fragment {
             return null;
         }
 
-        public Drawable getPageDrawable(int position) {
+        @Override
+        public int getPageIconResId(int position) {
             switch (position) {
                 case 0:
-                    return getResources().getDrawable(R.drawable.ic_action_icon_map);
+                    return R.drawable.ic_action_icon_map;
                 case 1:
-                    return getResources().getDrawable(R.drawable.ic_action_icon_list);
+                    return R.drawable.ic_action_icon_list;
             }
-            return null;
+            return 0;
         }
     }
 

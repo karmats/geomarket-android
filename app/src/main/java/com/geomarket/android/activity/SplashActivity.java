@@ -91,12 +91,12 @@ public class SplashActivity extends Activity {
         // Fetch events near user
         mInitText.setText(getString(R.string.init_fetch_position));
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        mLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        mLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
         if (mLocation != null) {
             buildFetchEventsTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, mLocation);
         } else {
             // No last known location found, request for it
-            locationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, new LocationListener() {
+            locationManager.requestSingleUpdate(LocationManager.NETWORK_PROVIDER, new LocationListener() {
                 @Override
                 public void onLocationChanged(Location location) {
                     mLocation = location;
@@ -144,6 +144,20 @@ public class SplashActivity extends Activity {
             public void onSuccess(List<Event> result) {
                 // TODO Groom this list, make some of it as one event
                 mEvents = new ArrayList<>(result.subList(0, result.size() > 100 ? 100 : result.size()));
+                Event e = new Event();
+                e.setLocation(new Event.Location(57.708870, 11.974560));
+                e.setExpires(123L);
+                Event.Company c = new Event.Company();
+                c.setCity("Gbg");
+                c.setName("Bolaget");
+                c.setStreet("Giefgatan 22");
+                c.setWww("www.systembolaget.se");
+                e.setCompany(c);
+                Event.Text t = new Event.Text();
+                t.setBody("Hej hej");
+                t.setHeading("Ett event");
+                e.setText(t);
+                mEvents.add(e);
                 startViewEventsActivity();
             }
 
