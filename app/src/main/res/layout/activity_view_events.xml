@@ -46,6 +46,12 @@
                 android:text="@string/details_next" />
         </LinearLayout>
 
+        <View
+            android:id="@+id/control_margin"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:visibility="gone"/>
+
         <com.astuetz.PagerSlidingTabStrip
             android:id="@+id/sliding_tab_strip"
             android:layout_width="match_parent"

@@ -260,6 +260,7 @@ public class MainActivity extends ActionBarActivity implements ViewListEventsFra
         mButtonView.setVisibility(View.GONE);
         mPagerSlidingTabStrip.setVisibility(View.VISIBLE);
         mDetailsPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
+        findViewById(R.id.control_margin).setVisibility(View.GONE);
     }
 
     @Override
@@ -267,6 +268,7 @@ public class MainActivity extends ActionBarActivity implements ViewListEventsFra
         mButtonView.setVisibility(View.GONE);
         mPagerSlidingTabStrip.setVisibility(View.GONE);
         mDetailsPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
+        findViewById(R.id.control_margin).setVisibility(View.VISIBLE);
     }
 
     private void viewEvent(Event event) {
