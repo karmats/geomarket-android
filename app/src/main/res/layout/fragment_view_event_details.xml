@@ -23,7 +23,6 @@
             android:id="@+id/view_event_detail_description"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/details_text_tmp"
             android:textSize="@dimen/text_size_normal" />
 
         <TextView
@@ -56,9 +55,8 @@
                     android:id="@+id/view_event_detail_location"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:gravity="center_vertical"
                     android:autoLink="map"
-                    android:text="@string/details_location_tmp"
+                    android:gravity="center_vertical"
                     android:textSize="@dimen/text_size_normal" />
             </LinearLayout>
 
@@ -78,9 +76,8 @@
                     android:id="@+id/view_event_detail_phone"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:gravity="center_vertical"
                     android:autoLink="phone"
-                    android:text="@string/details_contact_tmp"
+                    android:gravity="center_vertical"
                     android:textSize="@dimen/text_size_normal" />
             </LinearLayout>
 
@@ -100,9 +97,8 @@
                     android:id="@+id/view_event_detail_web_site"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:gravity="center_vertical"
                     android:autoLink="web"
-                    android:text="@string/details_website_tmp"
+                    android:gravity="center_vertical"
                     android:textSize="@dimen/text_size_normal" />
             </LinearLayout>
         </LinearLayout>

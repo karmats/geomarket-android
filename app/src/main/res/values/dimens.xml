@@ -14,4 +14,7 @@
     <dimen name="text_size_small">12sp</dimen>
     <dimen name="text_size_normal">16sp</dimen>
     <dimen name="text_size_large">20sp</dimen>
+
+    <!-- Other -->
+    <dimen name="control_bar_height">?attr/actionBarSize</dimen>
 </resources>

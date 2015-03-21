@@ -12,7 +12,13 @@ public interface IMainActivity {
      */
     PagerSlidingTabStrip getPagerSlidingTabStrip();
 
+    /**
+     * Show the controls under toolbar
+     */
     void showEventControls();
 
+    /**
+     * Hide the controls under toolbar
+     */
     void hideEventControls();
 }
