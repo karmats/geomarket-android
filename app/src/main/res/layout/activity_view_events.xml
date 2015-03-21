@@ -1,4 +1,5 @@
 <android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -15,6 +16,45 @@
             android:layout_height="?attr/actionBarSize"
             android:background="@drawable/toolbar_bg"
             android:theme="@style/ActionBar" />
+
+        <LinearLayout
+            android:id="@+id/details_btn_view"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@drawable/sub_toolbar_bg"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+            <Button
+                android:id="@+id/details_prev_btn"
+                style="@style/NavButton"
+                android:drawableLeft="@drawable/ic_triangle_left"
+                android:drawablePadding="-24dp"
+                android:paddingLeft="24dp"
+                android:text="@string/details_previous" />
+
+            <View
+                style="@style/Divider"
+                android:layout_height="28dp" />
+
+            <Button
+                android:id="@+id/details_next_btn"
+                style="@style/NavButton"
+                android:drawablePadding="-24dp"
+                android:drawableRight="@drawable/ic_triangle_right"
+                android:paddingRight="24dp"
+                android:text="@string/details_next" />
+        </LinearLayout>
+
+        <com.astuetz.PagerSlidingTabStrip
+            android:id="@+id/sliding_tab_strip"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@drawable/sub_toolbar_bg"
+            app:pstsIndicatorColor="@color/light_orange"
+            app:pstsShouldExpand="true"
+            app:pstsTabBackground="@drawable/pager_tab_bg"></com.astuetz.PagerSlidingTabStrip>
+
 
         <com.sothree.slidinguppanel.SlidingUpPanelLayout xmlns:sothree="http://schemas.android.com/apk/res-auto"
             android:id="@+id/sliding_layout"

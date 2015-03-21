@@ -1,75 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-
-    <LinearLayout
-        android:id="@+id/details_btn_view"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="@drawable/sub_toolbar_bg"
-        android:orientation="horizontal"
-        android:visibility="gone">
-
-        <Button
-            android:id="@+id/details_prev_btn"
-            style="@style/NavButton"
-            android:drawableLeft="@drawable/ic_triangle_left"
-            android:drawablePadding="-24dp"
-            android:paddingLeft="24dp"
-            android:text="@string/details_previous" />
-
-        <View
-            style="@style/Divider"
-            android:layout_height="28dp" />
-
-        <Button
-            android:id="@+id/details_next_btn"
-            style="@style/NavButton"
-            android:drawablePadding="-24dp"
-            android:drawableRight="@drawable/ic_triangle_right"
-            android:paddingRight="24dp"
-            android:text="@string/details_next" />
-    </LinearLayout>
-
-    <!--com.geomarket.android.view.SlidingTabLayout
-        android:id="@+id/sliding_tabs"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:theme="@style/PagerTitleStrip" /-->
-    <com.astuetz.PagerSlidingTabStrip
-        android:id="@+id/sliding_tab_strip"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="@drawable/sub_toolbar_bg"
-        app:pstsIndicatorColor="@color/light_orange"
-        app:pstsShouldExpand="true"
-        app:pstsTabBackground="@drawable/pager_tab_bg"></com.astuetz.PagerSlidingTabStrip>
-
-
 
     <android.support.v4.view.ViewPager
         android:id="@+id/pager"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="?attr/actionBarSize"></android.support.v4.view.ViewPager>
-
-    <!--FrameLayout
-        android:id="@+id/view_events_container"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
-    <ImageButton
-        android:id="@+id/map_list_btn"
-        android:layout_width="@dimen/round_button_diameter"
-        android:layout_height="@dimen/round_button_diameter"
-        android:layout_gravity="right|bottom"
-        android:layout_marginBottom="@dimen/activity_vertical_margin"
-        android:layout_marginRight="@dimen/activity_horizontal_margin"
-        android:background="@drawable/oval"
-        android:src="@drawable/ic_action_icon_list"
-        android:tint="@android:color/white"
-        android:elevation="@dimen/elevation_high"/-->
+        android:layout_height="wrap_content" />
 
 </FrameLayout>

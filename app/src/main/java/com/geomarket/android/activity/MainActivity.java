@@ -15,10 +15,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.astuetz.PagerSlidingTabStrip;
 import com.geomarket.android.R;
 import com.geomarket.android.api.Category;
 import com.geomarket.android.api.Event;
@@ -37,8 +40,10 @@ import java.util.ArrayList;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import butterknife.OnClick;
 
-public class MainActivity extends ActionBarActivity implements ViewListEventsFragment.OnListEventClickListener, MapEventsFragment.OnMapEventClickListener, ViewEventsFragment.OnViewEventsListener {
+public class MainActivity extends ActionBarActivity implements ViewListEventsFragment.OnListEventClickListener,
+        MapEventsFragment.OnMapEventClickListener, IMainActivity {
 
     // Extras from splash activity
     public static final String EVENTS_EXTRA = "events_extra";
@@ -50,6 +55,12 @@ public class MainActivity extends ActionBarActivity implements ViewListEventsFra
      */
     @InjectView(R.id.sliding_layout)
     SlidingUpPanelLayout mDetailsPanelLayout;
+
+    /**
+     * The {@link com.geomarket.android.view.SlidingTabLayout} for tab indication.
+     */
+    @InjectView(R.id.sliding_tab_strip)
+    PagerSlidingTabStrip mPagerSlidingTabStrip;
 
     @InjectView(R.id.main_toolbar)
     Toolbar mToolbar;
@@ -65,6 +76,12 @@ public class MainActivity extends ActionBarActivity implements ViewListEventsFra
     ListView mDrawerList;
     @InjectView(R.id.view_event_detail_thumb)
     ImageView mEventThumb;
+    @InjectView(R.id.details_btn_view)
+    LinearLayout mButtonView;
+    @InjectView(R.id.details_next_btn)
+    Button mNextButton;
+    @InjectView(R.id.details_prev_btn)
+    Button mPreviousButton;
 
     private ArrayList<Event> mEvents;
     private ArrayList<Category> mCategories;
@@ -81,6 +98,7 @@ public class MainActivity extends ActionBarActivity implements ViewListEventsFra
         // Inject the views
         ButterKnife.inject(this);
 
+        // Toolbar
         setSupportActionBar(mToolbar);
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, R.string.app_name, R.string.app_name);
         mDrawerLayout.setDrawerListener(mDrawerToggle);
@@ -101,29 +119,19 @@ public class MainActivity extends ActionBarActivity implements ViewListEventsFra
             }
         });
 
-        mDetailsPanelLayout.setPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
-            @Override
-            public void onPanelSlide(View view, float v) {
-            }
+        // Sliding up panel
+        mDetailsPanelLayout.setPanelSlideListener(new SlidingUpPanelLayout.SimplePanelSlideListener() {
 
             @Override
             public void onPanelCollapsed(View view) {
-                ViewEventsFragment viewEventsFragment = (ViewEventsFragment) getSupportFragmentManager().findFragmentByTag(ViewEventsFragment.TAG_NAME);
-                viewEventsFragment.onHideEventDetail();
+                mButtonView.setVisibility(View.GONE);
+                mPagerSlidingTabStrip.setVisibility(View.VISIBLE);
             }
 
             @Override
             public void onPanelExpanded(View view) {
-                ViewEventsFragment viewEventsFragment = (ViewEventsFragment) getSupportFragmentManager().findFragmentByTag(ViewEventsFragment.TAG_NAME);
-                viewEventsFragment.onViewEventDetail();
-            }
-
-            @Override
-            public void onPanelAnchored(View view) {
-            }
-
-            @Override
-            public void onPanelHidden(View view) {
+                mButtonView.setVisibility(View.VISIBLE);
+                mPagerSlidingTabStrip.setVisibility(View.GONE);
             }
         });
 
@@ -131,6 +139,19 @@ public class MainActivity extends ActionBarActivity implements ViewListEventsFra
         ViewEventsFragment viewEventsFragment = ViewEventsFragment.newInstance(mEvents, mCategories,
                 new Event.Location(mLatestLocation.getLatitude(), mLatestLocation.getLongitude()));
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, viewEventsFragment, ViewEventsFragment.TAG_NAME).addToBackStack(null).commit();
+    }
+
+    @OnClick(R.id.details_next_btn)
+    public void onNextButtonClicked() {
+        int idx = mEvents.indexOf(mCurrentEvent);
+        viewEvent(mEvents.get((idx + 1) >= mEvents.size() ? 0 : idx + 1));
+
+    }
+
+    @OnClick(R.id.details_prev_btn)
+    public void onPreviousButtonClicked() {
+        int idx = mEvents.indexOf(mCurrentEvent);
+        viewEvent(mEvents.get((idx - 1) <= 0 ? mEvents.size() - 1 : idx - 1));
     }
 
     @Override
@@ -192,7 +213,6 @@ public class MainActivity extends ActionBarActivity implements ViewListEventsFra
             mDetailsPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
         } else if (mDrawerLayout.isDrawerOpen(Gravity.START | Gravity.LEFT)) {
             mDrawerLayout.closeDrawers();
-            return;
         } else {
             super.onBackPressed();
         }
@@ -218,18 +238,6 @@ public class MainActivity extends ActionBarActivity implements ViewListEventsFra
         mDetailsPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
     }
 
-    // From the ViewEventsFragment
-    @Override
-    public void viewNextEvent() {
-        int idx = mEvents.indexOf(mCurrentEvent);
-        viewEvent(mEvents.get((idx + 1) >= mEvents.size() ? 0 : idx + 1));
-    }
-
-    @Override
-    public void viewPreviousEvent() {
-        int idx = mEvents.indexOf(mCurrentEvent);
-        viewEvent(mEvents.get((idx - 1) <= 0 ? mEvents.size() - 1 : idx - 1));
-    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -240,6 +248,25 @@ public class MainActivity extends ActionBarActivity implements ViewListEventsFra
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
+    }
+
+    @Override
+    public PagerSlidingTabStrip getPagerSlidingTabStrip() {
+        return mPagerSlidingTabStrip;
+    }
+
+    @Override
+    public void showEventControls() {
+        mButtonView.setVisibility(View.GONE);
+        mPagerSlidingTabStrip.setVisibility(View.VISIBLE);
+        mDetailsPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
+    }
+
+    @Override
+    public void hideEventControls() {
+        mButtonView.setVisibility(View.GONE);
+        mPagerSlidingTabStrip.setVisibility(View.GONE);
+        mDetailsPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
     }
 
     private void viewEvent(Event event) {

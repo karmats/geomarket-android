@@ -1,7 +1,6 @@
 package com.geomarket.android.fragment;
 
 import android.app.Activity;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -10,11 +9,10 @@ import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.LinearLayout;
 
 import com.astuetz.PagerSlidingTabStrip;
 import com.geomarket.android.R;
+import com.geomarket.android.activity.IMainActivity;
 import com.geomarket.android.api.Category;
 import com.geomarket.android.api.Event;
 import com.geomarket.android.util.LogHelper;
@@ -23,7 +21,6 @@ import java.util.ArrayList;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import butterknife.OnClick;
 
 public class ViewEventsFragment extends Fragment {
     public static final String TAG_NAME = "view_events_fragment_tag";
@@ -36,8 +33,8 @@ public class ViewEventsFragment extends Fragment {
     private ArrayList<Category> mCategories;
     private Event.Location mLocation;
 
-    // The callback listener
-    private OnViewEventsListener mListener;
+    // Main activity
+    private IMainActivity mMainActivity;
 
     /**
      * The {@link android.support.v4.view.ViewPager} that will host the section contents.
@@ -45,25 +42,12 @@ public class ViewEventsFragment extends Fragment {
     @InjectView(R.id.pager)
     ViewPager mViewPager;
 
-    /**
-     * The {@link com.geomarket.android.view.SlidingTabLayout} for tab indication.
-     */
-    @InjectView(R.id.sliding_tab_strip)
-    PagerSlidingTabStrip mPagerSlidingTabStrip;
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
      * fragments for each of the sections.
      */
-    ImagePagerAdapter mSectionsPagerAdapter;
-
-    @InjectView(R.id.details_btn_view)
-    LinearLayout mButtonView;
-    @InjectView(R.id.details_next_btn)
-    Button mNextButton;
-    @InjectView(R.id.details_prev_btn)
-    Button mPreviousButton;
-
+    EventsPagerAdapter mSectionsPagerAdapter;
 
     public static ViewEventsFragment newInstance(ArrayList<Event> events, ArrayList<Category> categories, Event.Location location) {
         LogHelper.logInfo("Events is " + events + " Location is " + location);
@@ -93,45 +77,28 @@ public class ViewEventsFragment extends Fragment {
 
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
-        mSectionsPagerAdapter = new ImagePagerAdapter(getFragmentManager());
+        mSectionsPagerAdapter = new EventsPagerAdapter(getChildFragmentManager());
 
         // Set up the ViewPager with the sections adapter.
         mViewPager.setAdapter(mSectionsPagerAdapter);
         mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener());
-        /*mPagerSlidingTabStrip.setSelectedIndicatorColors(getResources().getColor(R.color.light_orange));
-        mPagerSlidingTabStrip.setCustomTabView(R.layout.tab_item, 0, R.id.tab_item_img);*/
-        mPagerSlidingTabStrip.setViewPager(mViewPager);
+        mViewPager.setOffscreenPageLimit(2);
+        mMainActivity.getPagerSlidingTabStrip().setViewPager(mViewPager);
 
         return v;
     }
 
-    @OnClick(R.id.details_next_btn)
-    public void onNextButtonClicked() {
-        mListener.viewNextEvent();
-
-    }
-
-    @OnClick(R.id.details_prev_btn)
-    public void onPreviousButtonClicked() {
-        mListener.viewPreviousEvent();
-    }
-
-    // Called from main activity
-    public void onViewEventDetail() {
-        mButtonView.setVisibility(View.VISIBLE);
-        mPagerSlidingTabStrip.setVisibility(View.GONE);
-    }
-
-    public void onHideEventDetail() {
-        mButtonView.setVisibility(View.GONE);
-        mPagerSlidingTabStrip.setVisibility(View.VISIBLE);
+    @Override
+    public void onResume() {
+        super.onResume();
+        mMainActivity.showEventControls();
     }
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-            mListener = (OnViewEventsListener) activity;
+            mMainActivity = (IMainActivity) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
                     + " must implement OnLayoutChangedListener");
@@ -141,7 +108,7 @@ public class ViewEventsFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
-        mListener = null;
+        mMainActivity = null;
     }
 
 
@@ -149,9 +116,9 @@ public class ViewEventsFragment extends Fragment {
      * A {@link android.support.v13.app.FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.
      */
-    public class ImagePagerAdapter extends FragmentPagerAdapter implements PagerSlidingTabStrip.IconTabProvider {
+    public class EventsPagerAdapter extends FragmentPagerAdapter implements PagerSlidingTabStrip.IconTabProvider {
 
-        public ImagePagerAdapter(FragmentManager fm) {
+        public EventsPagerAdapter(FragmentManager fm) {
             super(fm);
         }
 
@@ -200,19 +167,4 @@ public class ViewEventsFragment extends Fragment {
         }
     }
 
-    /**
-     * Interface for communication with this fragment
-     */
-    public interface OnViewEventsListener {
-
-        /**
-         * View the next event
-         */
-        public void viewNextEvent();
-
-        /**
-         * View previous event
-         */
-        public void viewPreviousEvent();
-    }
 }
