@@ -15,10 +15,10 @@ public interface IMainActivity {
     /**
      * Show the controls under toolbar
      */
-    void showEventControls();
+    void onViewEventsView();
 
     /**
      * Hide the controls under toolbar
      */
-    void hideEventControls();
+    void onAccountView();
 }

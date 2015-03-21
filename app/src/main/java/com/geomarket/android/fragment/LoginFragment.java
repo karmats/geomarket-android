@@ -67,9 +67,6 @@ public class LoginFragment extends Fragment implements GoogleApiClient.Connectio
     // Needed for facebook login
     private UiLifecycleHelper uiHelper;
 
-    // Main activity
-    private IMainActivity mMainActivity;
-
     // UI references.
     @InjectView(R.id.login_progress)
     View mProgressView;
@@ -164,7 +161,6 @@ public class LoginFragment extends Fragment implements GoogleApiClient.Connectio
     @Override
     public void onResume() {
         super.onResume();
-        mMainActivity.hideEventControls();
         uiHelper.onResume();
     }
 
@@ -178,23 +174,6 @@ public class LoginFragment extends Fragment implements GoogleApiClient.Connectio
     public void onDestroy() {
         super.onDestroy();
         uiHelper.onDestroy();
-    }
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        try {
-            mMainActivity = (IMainActivity) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement OnLayoutChangedListener");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mMainActivity = null;
     }
 
     @Override

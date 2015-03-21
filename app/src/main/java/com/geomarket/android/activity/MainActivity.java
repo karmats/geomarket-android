@@ -26,6 +26,7 @@ import com.geomarket.android.R;
 import com.geomarket.android.api.Category;
 import com.geomarket.android.api.Event;
 import com.geomarket.android.api.service.GeoMarketServiceApiBuilder;
+import com.geomarket.android.fragment.AccountFragment;
 import com.geomarket.android.fragment.LoginFragment;
 import com.geomarket.android.fragment.MapEventsFragment;
 import com.geomarket.android.fragment.ViewEventDetailsFragment;
@@ -57,7 +58,7 @@ public class MainActivity extends ActionBarActivity implements ViewListEventsFra
     SlidingUpPanelLayout mDetailsPanelLayout;
 
     /**
-     * The {@link com.geomarket.android.view.SlidingTabLayout} for tab indication.
+     * The {@link com.astuetz.PagerSlidingTabStrip} for tab indication.
      */
     @InjectView(R.id.sliding_tab_strip)
     PagerSlidingTabStrip mPagerSlidingTabStrip;
@@ -138,7 +139,7 @@ public class MainActivity extends ActionBarActivity implements ViewListEventsFra
         // Start view events fragment
         ViewEventsFragment viewEventsFragment = ViewEventsFragment.newInstance(mEvents, mCategories,
                 new Event.Location(mLatestLocation.getLatitude(), mLatestLocation.getLongitude()));
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, viewEventsFragment, ViewEventsFragment.TAG_NAME).addToBackStack(null).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, viewEventsFragment, ViewEventsFragment.TAG_NAME).commit();
     }
 
     @OnClick(R.id.details_next_btn)
@@ -188,7 +189,7 @@ public class MainActivity extends ActionBarActivity implements ViewListEventsFra
         int id = item.getItemId();
         if (id == R.id.action_login) {
             LogHelper.logInfo("Action login clicked");
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, LoginFragment.newInstance(), LoginFragment.TAG_NAME)
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, AccountFragment.newInstance(), LoginFragment.TAG_NAME)
                     .addToBackStack(null).commit();
             return true;
         }
@@ -256,19 +257,16 @@ public class MainActivity extends ActionBarActivity implements ViewListEventsFra
     }
 
     @Override
-    public void showEventControls() {
+    public void onViewEventsView() {
         mButtonView.setVisibility(View.GONE);
         mPagerSlidingTabStrip.setVisibility(View.VISIBLE);
         mDetailsPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
-        findViewById(R.id.control_margin).setVisibility(View.GONE);
     }
 
     @Override
-    public void hideEventControls() {
+    public void onAccountView() {
         mButtonView.setVisibility(View.GONE);
-        mPagerSlidingTabStrip.setVisibility(View.GONE);
         mDetailsPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
-        findViewById(R.id.control_margin).setVisibility(View.VISIBLE);
     }
 
     private void viewEvent(Event event) {

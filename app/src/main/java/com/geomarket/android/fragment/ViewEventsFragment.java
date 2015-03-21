@@ -47,7 +47,7 @@ public class ViewEventsFragment extends Fragment {
      * The {@link android.support.v4.view.PagerAdapter} that will provide
      * fragments for each of the sections.
      */
-    EventsPagerAdapter mSectionsPagerAdapter;
+    EventsPagerAdapter mEventsPagerAdapter;
 
     public static ViewEventsFragment newInstance(ArrayList<Event> events, ArrayList<Category> categories, Event.Location location) {
         LogHelper.logInfo("Events is " + events + " Location is " + location);
@@ -77,12 +77,11 @@ public class ViewEventsFragment extends Fragment {
 
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
-        mSectionsPagerAdapter = new EventsPagerAdapter(getChildFragmentManager());
+        mEventsPagerAdapter = new EventsPagerAdapter(getChildFragmentManager());
 
         // Set up the ViewPager with the sections adapter.
-        mViewPager.setAdapter(mSectionsPagerAdapter);
+        mViewPager.setAdapter(mEventsPagerAdapter);
         mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener());
-        mViewPager.setOffscreenPageLimit(2);
         mMainActivity.getPagerSlidingTabStrip().setViewPager(mViewPager);
 
         return v;
@@ -91,7 +90,7 @@ public class ViewEventsFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        mMainActivity.showEventControls();
+        mMainActivity.onViewEventsView();
     }
 
     @Override
