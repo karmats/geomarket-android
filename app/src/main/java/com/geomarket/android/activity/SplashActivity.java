@@ -153,6 +153,8 @@ public class SplashActivity extends Activity {
                 c.setStreet("Giefgatan 22");
                 c.setWww("www.systembolaget.se");
                 e.setCompany(c);
+                e.setImageLargeUrl("/pictures/earls_medium.png");
+                e.setImageSmallUrl("/pictures/earls_medium.png");
                 Event.Text t = new Event.Text();
                 t.setBody("Hej hej");
                 t.setHeading("Ett event");

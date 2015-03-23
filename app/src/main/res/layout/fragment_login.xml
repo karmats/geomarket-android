@@ -1,144 +1,186 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center_horizontal"
-    android:orientation="vertical"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.geomarket.android.fragment.LoginFragment">
 
-    <!-- Login progress -->
-    <ProgressBar
-        android:id="@+id/login_progress"
-        style="?android:attr/progressBarStyleLarge"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:visibility="gone" />
-
     <LinearLayout
-        android:id="@+id/login_form"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_vertical_margin">
 
-        <com.google.android.gms.common.SignInButton
-            android:id="@+id/plus_sign_in_button"
-            android:layout_width="match_parent"
+        <!-- Login progress -->
+        <ProgressBar
+            android:id="@+id/login_progress"
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/activity_vertical_margin" />
-        <Button
-            android:id="@+id/plus_sign_out_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/action_sign_out"
-            android:visibility="gone"/>
-
-        <com.facebook.widget.LoginButton
-            android:id="@+id/facebook_sign_in_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="32dp" />
+            android:layout_marginBottom="8dp"
+            android:visibility="gone" />
 
         <LinearLayout
-            android:id="@+id/user_info"
+            android:id="@+id/login_form"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
 
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                android:cropToPadding="true"
+                android:scaleType="centerCrop"
+                android:src="@drawable/logo_splash" />
+
+            <EditText
+                android:id="@+id/login_email_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/create_account_email"
+                android:paddingTop="@dimen/activity_vertical_margin" />
+
+            <EditText
+                android:id="@+id/login_password_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/create_account_password"
+                android:paddingTop="@dimen/activity_vertical_margin"
+                android:password="true" />
+
+            <Button
+                style="@style/ActionButton"
+                android:text="@string/action_login" />
+
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:gravity="center"
                 android:paddingBottom="@dimen/activity_vertical_margin"
-                android:text="@string/user_info"
-                android:textSize="@dimen/text_size_large" />
+                android:paddingTop="@dimen/activity_vertical_margin"
+                android:text="@string/common_or"
+                android:textSize="@dimen/text_size_large"
+                android:textStyle="bold" />
 
-            <LinearLayout
+            <com.google.android.gms.common.SignInButton
+                android:id="@+id/plus_sign_in_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAlignment="center">
+                android:layout_marginBottom="@dimen/activity_vertical_margin" />
 
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.3"
-                    android:text="@string/user_info_id"
-                    android:textSize="@dimen/text_size_normal" />
-
-                <TextView
-                    android:id="@+id/user_info_id"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.7"
-                    android:textSize="@dimen/text_size_normal" />
-            </LinearLayout>
-
-            <LinearLayout
+            <Button
+                android:id="@+id/plus_sign_out_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAlignment="center">
+                android:text="@string/action_sign_out"
+                android:visibility="gone" />
 
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.3"
-                    android:text="@string/user_info_email"
-                    android:textSize="@dimen/text_size_normal" />
-
-                <TextView
-                    android:id="@+id/user_info_email"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.7"
-                    android:textSize="@dimen/text_size_normal" />
-            </LinearLayout>
-
-            <LinearLayout
+            <com.facebook.widget.LoginButton
+                android:id="@+id/facebook_sign_in_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAlignment="center">
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.3"
-                    android:text="@string/user_info_name"
-                    android:textSize="@dimen/text_size_normal" />
-
-                <TextView
-                    android:id="@+id/user_info_name"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.7"
-                    android:textSize="@dimen/text_size_normal" />
-            </LinearLayout>
+                android:layout_marginBottom="32dp" />
 
             <LinearLayout
+                android:id="@+id/user_info"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textAlignment="center">
+                android:layout_height="match_parent"
+                android:orientation="vertical">
 
                 <TextView
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.3"
-                    android:text="@string/user_info_gender"
-                    android:textSize="@dimen/text_size_normal" />
+                    android:paddingBottom="@dimen/activity_vertical_margin"
+                    android:text="@string/user_info"
+                    android:textSize="@dimen/text_size_large" />
 
-                <TextView
-                    android:id="@+id/user_info_gender"
-                    android:layout_width="0dp"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.7"
-                    android:textSize="@dimen/text_size_normal" />
+                    android:textAlignment="center">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.3"
+                        android:text="@string/user_info_id"
+                        android:textSize="@dimen/text_size_normal" />
+
+                    <TextView
+                        android:id="@+id/user_info_id"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.7"
+                        android:textSize="@dimen/text_size_normal" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAlignment="center">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.3"
+                        android:text="@string/user_info_email"
+                        android:textSize="@dimen/text_size_normal" />
+
+                    <TextView
+                        android:id="@+id/user_info_email"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.7"
+                        android:textSize="@dimen/text_size_normal" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAlignment="center">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.3"
+                        android:text="@string/user_info_name"
+                        android:textSize="@dimen/text_size_normal" />
+
+                    <TextView
+                        android:id="@+id/user_info_name"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.7"
+                        android:textSize="@dimen/text_size_normal" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAlignment="center">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.3"
+                        android:text="@string/user_info_gender"
+                        android:textSize="@dimen/text_size_normal" />
+
+                    <TextView
+                        android:id="@+id/user_info_gender"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.7"
+                        android:textSize="@dimen/text_size_normal" />
+                </LinearLayout>
             </LinearLayout>
         </LinearLayout>
-    </LinearLayout>
 
-</LinearLayout>
+    </LinearLayout>
+</ScrollView>
 
 
 
