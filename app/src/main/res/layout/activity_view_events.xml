@@ -15,7 +15,8 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="@drawable/toolbar_bg"
-            android:theme="@style/ActionBar" />
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+            app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
 
         <LinearLayout
             android:id="@+id/details_btn_view"
@@ -50,7 +51,7 @@
             android:id="@+id/control_margin"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:visibility="gone"/>
+            android:visibility="gone" />
 
         <com.astuetz.PagerSlidingTabStrip
             android:id="@+id/sliding_tab_strip"
@@ -67,8 +68,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="bottom"
-            sothree:umanoOverlay="true"
             sothree:umanoInitialState="hidden"
+            sothree:umanoOverlay="true"
             sothree:umanoPanelHeight="@dimen/sliding_up_panel_height"
             sothree:umanoParalaxOffset="100dp"
             sothree:umanoShadowHeight="4dp">
