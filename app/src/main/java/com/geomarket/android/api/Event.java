@@ -139,6 +139,28 @@ public class Event implements Parcelable {
         this.imageSmallUrl = imageSmallUrl;
     }
 
+    /**
+     * Checks if the event should be filtered by for a specified query.
+     *
+     * @param query The query string, must be lower case
+     * @return true if the event should be in the filter results, false otherwise.
+     */
+    public boolean shouldBeFiltered(String query) {
+        if (query == null || query.isEmpty()) {
+            return true;
+        } else if (text != null) {
+            String head = text.getHeading() != null ? text.getHeading() : "";
+            String body = text.getBody() != null ? text.getBody() : "";
+            if (head.toLowerCase().contains(query) || body.toLowerCase().contains(query)) {
+                return true;
+            }
+        } else if (company != null) {
+            if (company.getName() != null && company.getName().toLowerCase().startsWith(query)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     @Override
     public String toString() {
