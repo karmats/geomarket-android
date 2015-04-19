@@ -49,6 +49,7 @@ public class MapEventsFragment extends SupportMapFragment implements GoogleMap.O
     private ArrayList<Event> mEvents;
     private Event.Location mLocation;
     private ArrayList<Category> mCategories;
+    private GoogleMap mMap;
     private boolean mFirstTime;
     private boolean mCompanyIcons;
 
@@ -108,47 +109,49 @@ public class MapEventsFragment extends SupportMapFragment implements GoogleMap.O
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        final GoogleMap map = getMap();
-        if (map != null) {
-            map.setMyLocationEnabled(true);
-            map.setOnCameraChangeListener(this);
-            map.getUiSettings().setZoomControlsEnabled(false);
-            CameraUpdate cameraUpdate = CameraUpdateFactory.newCameraPosition(CameraPosition.builder().target(new LatLng(mLocation.getLatitude(),
-                    mLocation.getLongitude())).zoom(12.0f).build());
-            // Animate the camera if this is the first time, else just move it
-            if (mFirstTime) {
-                map.animateCamera(cameraUpdate);
-            } else {
-                map.moveCamera(cameraUpdate);
-            }
-            for (final Event e : mEvents) {
-                if (e.getLocation() != null) {
-                    Marker m = getMap().addMarker(new MarkerOptions().position(e.getLocation().toLatLng()));
-                    setMarkerIcon(m, e);
-                    mMarkerIdEventMap.put(m.getId(), e);
-                    mMarkersMap.put(m.getId(), m);
+        if (mMap == null) {
+            mMap = getMap();
+            if (mMap != null) {
+                mMap.setMyLocationEnabled(true);
+                mMap.setOnCameraChangeListener(this);
+                mMap.getUiSettings().setZoomControlsEnabled(false);
+                CameraUpdate cameraUpdate = CameraUpdateFactory.newCameraPosition(CameraPosition.builder().target(new LatLng(mLocation.getLatitude(),
+                        mLocation.getLongitude())).zoom(12.0f).build());
+                // Animate the camera if this is the first time, else just move it
+                if (mFirstTime) {
+                    mMap.animateCamera(cameraUpdate);
+                } else {
+                    mMap.moveCamera(cameraUpdate);
                 }
+                for (final Event e : mEvents) {
+                    if (e.getLocation() != null) {
+                        Marker m = getMap().addMarker(new MarkerOptions().position(e.getLocation().toLatLng()));
+                        setMarkerIcon(m, e);
+                        mMarkerIdEventMap.put(m.getId(), e);
+                        mMarkersMap.put(m.getId(), m);
+                    }
 
+                }
+                mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+                    @Override
+                    public void onMapClick(LatLng latLng) {
+                        mListener.onMapClick();
+                    }
+                });
+                // When user clicks on a marker, show the event details view
+                mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                    @Override
+                    public boolean onMarkerClick(Marker marker) {
+                        // Animate to the marker
+                        mListener.onMapEventClick(mMarkerIdEventMap.get(marker.getId()));
+                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(marker.getPosition(), mMap.getCameraPosition().zoom), 300, null);
+                        return true;
+                    }
+                });
+                mFirstTime = false;
+            } else {
+                LogHelper.logError("Google map is null, any chance that Google Services isn't installed?");
             }
-            map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-                @Override
-                public void onMapClick(LatLng latLng) {
-                    mListener.onMapClick();
-                }
-            });
-            // When user clicks on a marker, show the event details view
-            map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-                @Override
-                public boolean onMarkerClick(Marker marker) {
-                    // Animate to the marker
-                    mListener.onMapEventClick(mMarkerIdEventMap.get(marker.getId()));
-                    map.animateCamera(CameraUpdateFactory.newLatLngZoom(marker.getPosition(), map.getCameraPosition().zoom), 300, null);
-                    return true;
-                }
-            });
-            mFirstTime = false;
-        } else {
-            LogHelper.logError("Google map is null, any chance that Google Services isn't installed?");
         }
     }
 
