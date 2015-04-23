@@ -33,17 +33,17 @@ public class ListEventAdapter extends BaseAdapter implements Filterable {
     public ListEventAdapter(Context context, List<Event> events) {
         this.mContext = context;
         this.mEvents = events;
-        mFilteredEvents = new ArrayList<>(mEvents);
+        this.mFilteredEvents = events;
     }
 
     @Override
     public int getCount() {
-        return mEvents.size();
+        return mFilteredEvents.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return mEvents.get(position);
+        return mFilteredEvents.get(position);
     }
 
     @Override
@@ -77,7 +77,7 @@ public class ListEventAdapter extends BaseAdapter implements Filterable {
 
     @Override
     public Filter getFilter() {
-        return null;
+        return mFilter;
     }
 
     /**

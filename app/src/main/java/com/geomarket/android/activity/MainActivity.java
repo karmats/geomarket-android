@@ -171,7 +171,9 @@ public class MainActivity extends ActionBarActivity implements ViewListEventsFra
 
             @Override
             public boolean onQueryTextChange(String s) {
-                LogHelper.logInfo("Changing to " + s);
+                ViewEventsFragment viewEventsFragment = (ViewEventsFragment) getSupportFragmentManager()
+                        .findFragmentByTag(ViewEventsFragment.TAG_NAME);
+                viewEventsFragment.goToListViewAndFilterEvents(s);
                 return true;
             }
         });

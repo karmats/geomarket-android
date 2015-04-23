@@ -110,15 +110,29 @@ public class ViewEventsFragment extends Fragment {
         mMainActivity = null;
     }
 
+    /**
+     * Selects the list view and filter events
+     *
+     * @param filter Filter string
+     */
+    public void goToListViewAndFilterEvents(String filter) {
+        mViewPager.setCurrentItem(1);
+        mEventsPagerAdapter.filterEvents(filter);
+    }
 
     /**
      * A {@link android.support.v13.app.FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.
      */
     public class EventsPagerAdapter extends FragmentPagerAdapter implements PagerSlidingTabStrip.IconTabProvider {
+        private MapEventsFragment mapEventsFragment;
+        private ViewListEventsFragment viewListEventsFragment;
 
         public EventsPagerAdapter(FragmentManager fm) {
             super(fm);
+            mapEventsFragment = MapEventsFragment.newInstance(mEvents, mCategories,
+                    new Event.Location(mLocation.getLatitude(), mLocation.getLongitude()));
+            viewListEventsFragment = ViewListEventsFragment.newInstance(mEvents);
         }
 
         @Override
@@ -127,11 +141,10 @@ public class ViewEventsFragment extends Fragment {
             // Return a PlaceholderFragment (defined as a static inner class below).
             switch (position) {
                 case 0:
-                    return MapEventsFragment.newInstance(mEvents, mCategories,
-                            new Event.Location(mLocation.getLatitude(), mLocation.getLongitude()));
+                    return mapEventsFragment;
 
                 case 1:
-                    return ViewListEventsFragment.newInstance(mEvents);
+                    return viewListEventsFragment;
             }
             LogHelper.logError("Something is terribly wrong, got tab position " + position);
             return null;
@@ -163,6 +176,15 @@ public class ViewEventsFragment extends Fragment {
                     return R.drawable.ic_action_icon_list;
             }
             return 0;
+        }
+
+        /**
+         * Filter events
+         *
+         * @param filter Filter string
+         */
+        public void filterEvents(String filter) {
+            viewListEventsFragment.filterEvents(filter);
         }
     }
 

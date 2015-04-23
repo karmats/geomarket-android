@@ -1,19 +1,19 @@
 package com.geomarket.android.fragment;
 
 import android.app.Activity;
-import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
-import android.widget.ListAdapter;
 import android.widget.TextView;
 
 import com.geomarket.android.R;
 import com.geomarket.android.adapter.ListEventAdapter;
 import com.geomarket.android.api.Event;
+import com.geomarket.android.util.LogHelper;
 
 import java.util.ArrayList;
 
@@ -40,7 +40,7 @@ public class ViewListEventsFragment extends Fragment implements AbsListView.OnIt
      * The Adapter which will be used to populate the ListView/GridView with
      * Views.
      */
-    private ListAdapter mAdapter;
+    private ListEventAdapter mAdapter;
 
     /**
      * The Event items
@@ -92,7 +92,7 @@ public class ViewListEventsFragment extends Fragment implements AbsListView.OnIt
             mListener = (OnListEventClickListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
-                    + " must implement OnFragmentInteractionListener");
+                    + " must implement OnListEventClickListener");
         }
     }
 
@@ -123,6 +123,15 @@ public class ViewListEventsFragment extends Fragment implements AbsListView.OnIt
         if (emptyText instanceof TextView) {
             ((TextView) emptyView).setText(emptyText);
         }
+    }
+
+    /**
+     * Filter events
+     *
+     * @param filter Filter string
+     */
+    public void filterEvents(String filter) {
+        mAdapter.getFilter().filter(filter);
     }
 
     /**
